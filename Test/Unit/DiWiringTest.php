@@ -1,0 +1,41 @@
+<?php
+/**
+ * @copyright Copyright (c) the Commerce modules authors
+ * @license   OSL-3.0 https://opensource.org/licenses/OSL-3.0
+ */
+declare(strict_types=1);
+
+namespace Commerce\CatalogAccess\Test\Unit;
+
+use Commerce\Foundation\Test\Support\DiWiringAssertions;
+use PHPUnit\Framework\TestCase;
+
+/**
+ * This module's `di.xml` against its own constructors.
+ *
+ * @see DiWiringAssertions for what each assertion reads and why.
+ */
+final class DiWiringTest extends TestCase
+{
+    use DiWiringAssertions;
+
+    public function testEveryInjectedInterfaceCanBeResolvedByTheObjectManager(): void
+    {
+        self::assertEveryInjectedInterfaceIsResolvable(self::moduleDir());
+    }
+
+    public function testEveryPreferenceNamesAClassThatExistsAndImplementsIt(): void
+    {
+        self::assertEveryPreferenceResolvesToAnImplementation(self::moduleDir());
+    }
+
+    public function testNoVirtualTypeIsReferencedThroughAGeneratedProxy(): void
+    {
+        self::assertNoVirtualTypeIsReferencedThroughAGeneratedProxy(self::moduleDir());
+    }
+
+    private static function moduleDir(): string
+    {
+        return dirname(__DIR__, 2);
+    }
+}

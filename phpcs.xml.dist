@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<ruleset name="Commerce_CatalogAccess">
+    <description>
+        Magento's own coding standard, plus a hard floor on the PHP version the
+        manifest claims to support.
+
+        The floor is 8.4, which is what the estate runs and what this code is
+        written for: typed class constants need 8.3, and `new Foo()->bar()`
+        needs 8.4. Declaring anything lower would be a promise the code cannot
+        keep — a store on 8.1 would not fatal at runtime, it would fail to
+        parse the file at all.
+
+        Note that PHPCompatibility 9.3 predates PHP 8.1 entirely, so it cannot
+        police this floor on its own. What actually catches a violation is the
+        `php -l` matrix in CI, which runs the real interpreter.
+    </description>
+
+    <file>Api</file>
+    <file>Model</file>
+    <file>Test</file>
+    <file>registration.php</file>
+
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+    <arg value="sp"/>
+
+    <rule ref="Magento2"/>
+
+    <!-- Every file declares strict types; the Magento CI enforces the same rule. -->
+    <rule ref="Generic.PHP.RequireStrictTypes"/>
+
+    <rule ref="PHPCompatibility">
+        <include-pattern>*\.php$</include-pattern>
+    </rule>
+    <config name="testVersion" value="8.4-"/>
+
+    <!-- Exclusions, each with its reason. -->
+
+    <!--
+        A test class is not an extension point: PHPUnit instantiates it
+        directly, nothing subclasses it, and `final` says so.
+    -->
+    <rule ref="Magento2.PHP.FinalImplementation">
+        <exclude-pattern>Test/*</exclude-pattern>
+    </rule>
+
+    <!-- PHPUnit requires data providers to be static. -->
+    <rule ref="Magento2.Functions.StaticFunction">
+        <exclude-pattern>Test/*</exclude-pattern>
+    </rule>
+
+    <!-- A test double's no-op body is the behaviour under test. -->
+    <rule ref="Magento2.CodeAnalysis.EmptyBlock">
+        <exclude-pattern>Test/*</exclude-pattern>
+    </rule>
+
+    <!--
+        The test bootstraps run before any framework exists and can only return
+        a code to the process.
+    -->
+    <rule ref="Magento2.Security.LanguageConstruct">
+        <exclude-pattern>Test/bootstrap.php</exclude-pattern>
+        <exclude-pattern>Test/integration-bootstrap.php</exclude-pattern>
+    </rule>
+
+    <!-- Type hints on test doubles. -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
+        <exclude-pattern>Test/*</exclude-pattern>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint">
+        <exclude-pattern>Test/*</exclude-pattern>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint">
+        <exclude-pattern>Test/*</exclude-pattern>
+    </rule>
+
+    <!--
+        A docblock that only restates a native signature carries no
+        information, so none is required.
+    -->
+    <rule ref="Magento2.Annotation.MethodAnnotationStructure">
+        <severity>0</severity>
+    </rule>
+
+    <!-- Docblocks that only restate a native signature. -->
+    <rule ref="Magento2.Annotation.MethodArguments">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Magento2.Commenting.ClassPropertyPHPDocFormatting">
+        <severity>0</severity>
+    </rule>
+    <!--
+        These assert that the exception propagated and that the cleanup still
+        ran, which has to follow the catch.
+    -->
+    <rule ref="Magento2.Exceptions.ThrowCatch">
+        <exclude-pattern>Test/*</exclude-pattern>
+    </rule>
+</ruleset>

@@ -1,0 +1,16 @@
+# Static analysis needs the Magento classes on the autoloader, so this is only
+# runnable where `composer install` has resolved magento/framework. The CI job
+# that runs it is gated on those credentials being present rather than being
+# allowed to pass vacuously.
+parameters:
+    level: 6
+    paths:
+        - Api
+        - Model
+    excludePaths:
+        - Test/*
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        # Magento's models expose their columns through __call, so every
+        # getter on a core model is invisible to static analysis.
+        - '#Call to an undefined method Magento\\[A-Za-z\\]+::(get|set|has)[A-Za-z]+\(\)#'

@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="Commerce\CatalogAccess\Api\ProductLocatorInterface"
+                type="Commerce\CatalogAccess\Model\Product\ProductLocator"/>
+    <preference for="Commerce\CatalogAccess\Api\ProductBatchLoaderInterface"
+                type="Commerce\CatalogAccess\Model\Product\ProductBatchLoader"/>
+    <preference for="Commerce\CatalogAccess\Api\CategoryNameResolverInterface"
+                type="Commerce\CatalogAccess\Model\Category\CategoryNameResolver"/>
+    <preference for="Commerce\CatalogAccess\Api\AttributeOptionLabelResolverInterface"
+                type="Commerce\CatalogAccess\Model\Attribute\AttributeOptionLabelResolver"/>
+    <preference for="Commerce\CatalogAccess\Api\StoreScopeInterface"
+                type="Commerce\CatalogAccess\Model\Store\StoreScope"/>
+    <preference for="Commerce\CatalogAccess\Api\AttributeValueReaderInterface"
+                type="Commerce\CatalogAccess\Model\Attribute\AttributeValueReader"/>
+    <preference for="Commerce\CatalogAccess\Api\ProductCategoryIdsInterface"
+                type="Commerce\CatalogAccess\Model\Category\ProductCategoryIds"/>
+    <preference for="Commerce\CatalogAccess\Api\ConfigurableVariantsInterface"
+                type="Commerce\CatalogAccess\Model\Configurable\ConfigurableVariants"/>
+
+    <!--
+        A memo per consumer: the container shares one instance per type, and
+        the bounds differ by entry size.
+    -->
+    <virtualType name="Commerce\CatalogAccess\Model\Memo\ProductLocatorMemo"
+                 type="Commerce\CatalogAccess\Model\Memo\RequestMemo">
+        <arguments>
+            <argument name="limit" xsi:type="number">500</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Commerce\CatalogAccess\Model\Memo\CategoryNameMemo"
+                 type="Commerce\CatalogAccess\Model\Memo\RequestMemo">
+        <arguments>
+            <argument name="limit" xsi:type="number">20000</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Commerce\CatalogAccess\Model\Memo\AttributeLabelMemo"
+                 type="Commerce\CatalogAccess\Model\Memo\RequestMemo">
+        <arguments>
+            <argument name="limit" xsi:type="number">20000</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Commerce\CatalogAccess\Model\Memo\ProductCategoryIdsMemo"
+                 type="Commerce\CatalogAccess\Model\Memo\RequestMemo">
+        <arguments>
+            <argument name="limit" xsi:type="number">20000</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Commerce\CatalogAccess\Model\Memo\ConfigurableVariantsMemo"
+                 type="Commerce\CatalogAccess\Model\Memo\RequestMemo">
+        <arguments>
+            <argument name="limit" xsi:type="number">20000</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Commerce\CatalogAccess\Model\Product\ProductLocator">
+        <arguments>
+            <argument name="memo" xsi:type="object">Commerce\CatalogAccess\Model\Memo\ProductLocatorMemo</argument>
+        </arguments>
+    </type>
+    <type name="Commerce\CatalogAccess\Model\Category\CategoryNameResolver">
+        <arguments>
+            <argument name="memo" xsi:type="object">Commerce\CatalogAccess\Model\Memo\CategoryNameMemo</argument>
+        </arguments>
+    </type>
+    <type name="Commerce\CatalogAccess\Model\Attribute\AttributeOptionLabelResolver">
+        <arguments>
+            <argument name="memo" xsi:type="object">Commerce\CatalogAccess\Model\Memo\AttributeLabelMemo</argument>
+        </arguments>
+    </type>
+    <type name="Commerce\CatalogAccess\Model\Category\ProductCategoryIds">
+        <arguments>
+            <argument name="memo" xsi:type="object">Commerce\CatalogAccess\Model\Memo\ProductCategoryIdsMemo</argument>
+        </arguments>
+    </type>
+    <type name="Commerce\CatalogAccess\Model\Configurable\ConfigurableVariants">
+        <arguments>
+            <argument name="memo" xsi:type="object">Commerce\CatalogAccess\Model\Memo\ConfigurableVariantsMemo</argument>
+        </arguments>
+    </type>
+
+    <!--
+        `['*']` selects every attribute, which is what a feed or an export
+        wants and is one join per attribute set, not per attribute.
+    -->
+    <type name="Commerce\CatalogAccess\Model\Product\ProductBatchLoader">
+        <arguments>
+            <argument name="defaultAttributes" xsi:type="array">
+                <item name="all" xsi:type="string">*</item>
+            </argument>
+            <argument name="chunkSize" xsi:type="number">500</argument>
+        </arguments>
+    </type>
+
+</config>

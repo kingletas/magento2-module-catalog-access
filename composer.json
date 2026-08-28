@@ -1,0 +1,63 @@
+{
+    "name": "commerce/module-catalog-access",
+    "description": "The safe way to read the catalogue: products by SKU or id, category names and paths, attribute option labels, and the store scope those reads happen in. Batched, store-keyed and bounded, so the mistakes these patterns invite cannot be made.",
+    "type": "magento2-module",
+    "license": "OSL-3.0",
+    "require": {
+        "php": ">=8.4",
+        "commerce/module-foundation": "^1.0",
+        "magento/framework": ">=103.0",
+        "magento/module-catalog": ">=104.0",
+        "magento/module-configurable-product": ">=100.4",
+        "magento/module-eav": ">=102.1",
+        "magento/module-store": ">=101.1"
+    },
+    "require-dev": {
+        "magento/magento-coding-standard": ">=38 <42",
+        "phpcompatibility/php-compatibility": "^9.3",
+        "phpmd/phpmd": "^2.15",
+        "phpstan/phpstan": "^1.11",
+        "phpunit/phpunit": "^10.5 || ^11.0"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Commerce\\CatalogAccess\\": ""
+        },
+        "exclude-from-classmap": [
+            "/Test/"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "magento/magento-composer-installer": true
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "lint": "find . -path ./vendor -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null",
+        "cs": "phpcs --standard=phpcs.xml.dist",
+        "cs-fix": "phpcbf --standard=phpcs.xml.dist",
+        "stan": "phpstan analyse --configuration phpstan.neon.dist --no-progress",
+        "md": "phpmd Api,Model text phpmd.xml.dist",
+        "test": "phpunit --configuration phpunit.xml.dist",
+        "test-wiring": "phpunit --configuration phpunit.xml.dist --testsuite wiring",
+        "test-behaviour": "phpunit --configuration phpunit.xml.dist --testsuite behaviour",
+        "test-performance": "phpunit --configuration phpunit.xml.dist --testsuite performance",
+        "test-unit": "phpunit --configuration phpunit.xml.dist --testsuite unit",
+        "check": [
+            "@lint",
+            "@cs",
+            "@stan",
+            "@md",
+            "@test"
+        ]
+    },
+    "scripts-descriptions": {
+        "check": "Everything the CI pull-request gate runs, except the integration suite.",
+        "test": "Every suite this module ships. Needs M2_VENDOR pointing at a Magento installation's vendor directory."
+    }
+}

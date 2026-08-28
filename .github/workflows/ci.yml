@@ -1,0 +1,152 @@
+# Self-contained CI for a standalone Magento 2 module.
+#
+# Everything runs from this repository and public packages, and the jobs are
+# split by what each needs:
+#
+#   lint, coding-standard   no Magento packages, no credentials  -> always gate
+#   unit, static-analysis   need magento/framework from repo.magento.com
+#
+# There is no integration job: this module owns no tables, no ACL and no schema.
+#
+# `unit` and `static-analysis` fail loudly when the credentials are missing
+# rather than skipping green.
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PHP_VERSION: '8.4'
+
+jobs:
+  lint:
+    name: Syntax and manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, libxml, mbstring
+          coverage: none
+
+      - name: Validate composer.json
+      # Not `--strict`.
+        run: composer validate --no-check-lock
+
+      - name: PHP syntax
+        run: |
+          set -euo pipefail
+          find . -path ./vendor -prune -o -name '*.php' -print0 \
+            | xargs -0 -n1 -P4 php -l > /dev/null
+
+      - name: XML is well formed
+        run: |
+          set -euo pipefail
+          find . -path ./vendor -prune -o \( -name '*.xml' -o -name '*.xml.dist' \) -print0 \
+            | xargs -0 -n1 xmllint --noout
+
+
+  coding-standard:
+    name: Coding standard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, libxml, mbstring
+          coverage: none
+
+      - name: Install the standard only
+        # magento/magento-coding-standard is on Packagist, so this job needs no
+        # Magento credentials and always gates.
+        run: |
+          composer init --quiet --name=commerce/cs-runner --no-interaction
+          composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer require --dev --no-interaction --no-progress \
+            magento/magento-coding-standard:'>=38 <42' \
+            phpcompatibility/php-compatibility:^9.3
+
+      - name: phpcs
+        run: vendor/bin/phpcs --standard=phpcs.xml.dist --report=full
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.4']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, libxml, mbstring, intl, bcmath, soap
+          coverage: xdebug
+
+      - name: Require Magento credentials
+        # Named explicitly rather than skipped, so the absence of the secret is
+        # a visible failure instead of a green tick over nothing.
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
+        run: |
+          if [ -z "${COMPOSER_AUTH}" ]; then
+            echo "::error::COMPOSER_AUTH is not set. The unit suite needs magento/framework from repo.magento.com."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: PHPUnit
+        env:
+          M2_VENDOR: ${{ github.workspace }}/vendor
+        run: vendor/bin/phpunit --configuration phpunit.xml.dist --testsuite unit
+
+  static-analysis:
+    name: Static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, libxml, mbstring, intl, bcmath, soap
+          coverage: none
+
+      - name: Require Magento credentials
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
+        run: |
+          if [ -z "${COMPOSER_AUTH}" ]; then
+            echo "::error::COMPOSER_AUTH is not set. PHPStan cannot resolve Magento types without it."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
+        run: |
+          composer install --no-interaction --no-progress --prefer-dist
+          composer require --dev --no-interaction --no-progress \
+            phpstan/phpstan:^1.11 phpmd/phpmd:^2.15
+
+      - name: PHPStan
+        run: vendor/bin/phpstan analyse --configuration phpstan.neon.dist --no-progress
+
+      - name: PHPMD
+        run: vendor/bin/phpmd Api,Model text phpmd.xml.dist

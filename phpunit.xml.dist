@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!-- One suite, and it needs one thing: a Magento autoloader. -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         bootstrap="Test/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         failOnWarning="true"
+         failOnNotice="true"
+         failOnRisky="true"
+         beStrictAboutOutputDuringTests="true"
+         displayDetailsOnTestsThatTriggerWarnings="true">
+    <testsuites>
+        <testsuite name="unit">
+            <directory suffix="Test.php">Test/Unit</directory>
+        </testsuite>
+
+        <!-- The XML in etc/ against the code it names. -->
+        <testsuite name="wiring">
+            <directory suffix="Test.php">Test/Wiring</directory>
+        </testsuite>
+
+        <!--
+          Whole workflows, real collaborators, fakes only at the process edge.
+        -->
+        <testsuite name="behaviour">
+            <directory suffix="Test.php">Test/Behaviour</directory>
+        </testsuite>
+
+        <!--
+          What a workload costs, counted rather than timed.
+        -->
+        <testsuite name="performance">
+            <directory suffix="Test.php">Test/Performance</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">Api</directory>
+            <directory suffix=".php">Model</directory>
+        </include>
+    </source>
+</phpunit>
