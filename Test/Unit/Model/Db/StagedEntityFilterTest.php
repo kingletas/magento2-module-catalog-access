@@ -21,7 +21,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-final class StagedEntityFilterTest extends TestCase
+class StagedEntityFilterTest extends TestCase
 {
     private const NOW = 1_760_000_000;
 
@@ -59,7 +59,7 @@ final class StagedEntityFilterTest extends TestCase
 
     public function testTheLinkFieldComesFromTheEntitysMetadata(): void
     {
-        self::assertSame('row_id', $this->filter('row_id')->getLinkField(ProductInterface::class));
+        $this->assertSame('row_id', $this->filter('row_id')->getLinkField(ProductInterface::class));
     }
 
     public function testTheLinkFieldIsAskedForOnce(): void
@@ -67,7 +67,7 @@ final class StagedEntityFilterTest extends TestCase
         $metadata = $this->createMock(EntityMetadataInterface::class);
         $metadata->method('getLinkField')->willReturn('row_id');
 
-        $this->metadataPool->expects(self::once())->method('getMetadata')->willReturn($metadata);
+        $this->metadataPool->expects($this->once())->method('getMetadata')->willReturn($metadata);
 
         $filter = new StagedEntityFilter($this->resourceConnection, $this->metadataPool);
 
@@ -87,12 +87,12 @@ final class StagedEntityFilterTest extends TestCase
 
         $filter = new StagedEntityFilter($this->resourceConnection, $this->metadataPool);
 
-        self::assertSame('entity_id', $filter->getLinkField('Some\Unregistered\Entity'));
+        $this->assertSame('entity_id', $filter->getLinkField('Some\Unregistered\Entity'));
     }
 
     public function testAnEmptyLinkFieldIsNotUsedAsAColumnName(): void
     {
-        self::assertSame('entity_id', $this->filter('')->getLinkField(ProductInterface::class));
+        $this->assertSame('entity_id', $this->filter('')->getLinkField(ProductInterface::class));
     }
 
     /**
@@ -110,7 +110,7 @@ final class StagedEntityFilterTest extends TestCase
             self::NOW
         );
 
-        self::assertSame(
+        $this->assertSame(
             [
                 ['entity.created_in <= ?', self::NOW],
                 ['entity.updated_in > ?', self::NOW],
@@ -125,7 +125,7 @@ final class StagedEntityFilterTest extends TestCase
 
         $this->filter('row_id')->applyCurrentVersion($this->select, 'child', 'catalog_product_entity', self::NOW);
 
-        self::assertSame('child.created_in <= ?', $this->conditions[0][0]);
+        $this->assertSame('child.created_in <= ?', $this->conditions[0][0]);
     }
 
     /**
@@ -138,14 +138,14 @@ final class StagedEntityFilterTest extends TestCase
 
         $this->filter('entity_id')->applyCurrentVersion($this->select, 'entity', 'catalog_category_entity');
 
-        self::assertSame([], $this->conditions);
+        $this->assertSame([], $this->conditions);
     }
 
     public function testEachTableIsInspectedOnce(): void
     {
         $this->stagingColumns = true;
 
-        $this->connection->expects(self::exactly(2))
+        $this->connection->expects($this->exactly(2))
             ->method('tableColumnExists')
             ->willReturn(true);
 
@@ -162,7 +162,7 @@ final class StagedEntityFilterTest extends TestCase
 
         $this->filter('row_id')->applyCurrentVersion($this->select, 'entity', 'catalog_category_entity');
 
-        self::assertEqualsWithDelta(time(), $this->conditions[0][1], 5.0);
+        $this->assertEqualsWithDelta(time(), $this->conditions[0][1], 5.0);
     }
 
     private function filter(string $linkField): StagedEntityFilter

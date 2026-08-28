@@ -26,7 +26,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-final class AttributeOptionLabelResolverTest extends TestCase
+class AttributeOptionLabelResolverTest extends TestCase
 {
     private AdapterInterface&MockObject $connection;
     private EavConfig&MockObject $eavConfig;
@@ -82,7 +82,7 @@ final class AttributeOptionLabelResolverTest extends TestCase
             ['option_id' => '248', 'label' => 'Wine'],
         ];
 
-        self::assertSame(
+        $this->assertSame(
             [247 => 'Ceil Blue', 248 => 'Wine'],
             $this->resolver()->getLabels('color', [247, 248])
         );
@@ -91,7 +91,7 @@ final class AttributeOptionLabelResolverTest extends TestCase
     public function testAWholeBatchIsOneQuery(): void
     {
         $this->attributeIs($this->tableSourced());
-        $this->connection->expects(self::once())->method('fetchAll');
+        $this->connection->expects($this->once())->method('fetchAll');
 
         $this->resolver()->getLabels('color', range(1, 40));
     }
@@ -102,12 +102,12 @@ final class AttributeOptionLabelResolverTest extends TestCase
 
         $this->resolver()->getLabels('color', [247], 4);
 
-        self::assertStringContainsString('store_value.store_id = 4', $this->joins[0]['store_value']['condition']);
-        self::assertSame(
+        $this->assertStringContainsString('store_value.store_id = 4', $this->joins[0]['store_value']['condition']);
+        $this->assertSame(
             'COALESCE(store_value.value, default_value.value)',
             (string) $this->joins[0]['store_value']['columns']['label']
         );
-        self::assertContains(['default_value.store_id = ?', 0], $this->conditions[0]);
+        $this->assertContains(['default_value.store_id = ?', 0], $this->conditions[0]);
     }
 
     /**
@@ -117,10 +117,10 @@ final class AttributeOptionLabelResolverTest extends TestCase
     public function testATableSourcedAttributeIsNeitherAskedNorMutated(): void
     {
         $source = $this->createMock(TableSource::class);
-        $source->expects(self::never())->method('getAllOptions');
+        $source->expects($this->never())->method('getAllOptions');
 
         $attribute = $this->attributeIs($source);
-        $attribute->expects(self::never())->method('__call');
+        $attribute->expects($this->never())->method('__call');
 
         $this->resolver()->getLabels('color', [247], 4);
     }
@@ -138,9 +138,9 @@ final class AttributeOptionLabelResolverTest extends TestCase
         ]);
 
         $this->attributeIs($source);
-        $this->connection->expects(self::never())->method('fetchAll');
+        $this->connection->expects($this->never())->method('fetchAll');
 
-        self::assertSame([1 => 'Yes'], $this->resolver()->getLabels('is_featured', [1]));
+        $this->assertSame([1 => 'Yes'], $this->resolver()->getLabels('is_featured', [1]));
     }
 
     /**
@@ -156,7 +156,7 @@ final class AttributeOptionLabelResolverTest extends TestCase
 
         $this->attributeIs($source);
 
-        self::assertSame('No', $this->resolver()->getLabel('is_featured', 0));
+        $this->assertSame('No', $this->resolver()->getLabel('is_featured', 0));
     }
 
     public function testOptionsGroupedIntoOptgroupsAreFlattened(): void
@@ -175,7 +175,7 @@ final class AttributeOptionLabelResolverTest extends TestCase
 
         $this->attributeIs($source);
 
-        self::assertSame([5 => 'Ceil Blue', 7 => 'Wine'], $this->resolver()->getLabels('color', [5, 7]));
+        $this->assertSame([5 => 'Ceil Blue', 7 => 'Wine'], $this->resolver()->getLabels('color', [5, 7]));
     }
 
     /**
@@ -189,7 +189,7 @@ final class AttributeOptionLabelResolverTest extends TestCase
 
         $this->attributeIs($source);
 
-        self::assertSame([], $this->resolver()->getLabels('is_featured', [1]));
+        $this->assertSame([], $this->resolver()->getLabels('is_featured', [1]));
     }
 
     public function testAnAttributeWithNoOptionsResolvesToNothing(): void
@@ -199,9 +199,9 @@ final class AttributeOptionLabelResolverTest extends TestCase
         $attribute->method('usesSource')->willReturn(false);
 
         $this->eavConfig->method('getAttribute')->willReturn($attribute);
-        $this->connection->expects(self::never())->method('fetchAll');
+        $this->connection->expects($this->never())->method('fetchAll');
 
-        self::assertSame([], $this->resolver()->getLabels('description', [247]));
+        $this->assertSame([], $this->resolver()->getLabels('description', [247]));
     }
 
     /**
@@ -214,9 +214,9 @@ final class AttributeOptionLabelResolverTest extends TestCase
         $attribute->method('getId')->willReturn(null);
 
         $this->eavConfig->method('getAttribute')->willReturn($attribute);
-        $this->connection->expects(self::never())->method('fetchAll');
+        $this->connection->expects($this->never())->method('fetchAll');
 
-        self::assertSame([], $this->resolver()->getLabels('not_an_attribute', [247]));
+        $this->assertSame([], $this->resolver()->getLabels('not_an_attribute', [247]));
     }
 
     public function testAnAttributeLookupThatThrowsIsNotFatal(): void
@@ -224,7 +224,7 @@ final class AttributeOptionLabelResolverTest extends TestCase
         $this->eavConfig->method('getAttribute')
             ->willThrowException(new LocalizedException(__('no such entity type')));
 
-        self::assertSame([], $this->resolver()->getLabels('color', [247]));
+        $this->assertSame([], $this->resolver()->getLabels('color', [247]));
     }
 
     /**
@@ -238,7 +238,7 @@ final class AttributeOptionLabelResolverTest extends TestCase
             ['option_id' => '47', 'label' => 'Tall'],
         ];
 
-        self::assertSame(['Petite', 'Tall'], $this->resolver()->resolveValue('fit', '12,47'));
+        $this->assertSame(['Petite', 'Tall'], $this->resolver()->resolveValue('fit', '12,47'));
     }
 
     public function testAnArrayOfIdsResolvesTheSameWay(): void
@@ -249,21 +249,21 @@ final class AttributeOptionLabelResolverTest extends TestCase
             ['option_id' => '47', 'label' => 'Tall'],
         ];
 
-        self::assertSame(['Petite', 'Tall'], $this->resolver()->resolveValue('fit', [12, 47]));
+        $this->assertSame(['Petite', 'Tall'], $this->resolver()->resolveValue('fit', [12, 47]));
     }
 
     public function testAnEmptyValueResolvesToAnEmptyListAndNotToNull(): void
     {
         $this->attributeIs($this->tableSourced());
-        $this->connection->expects(self::never())->method('fetchAll');
+        $this->connection->expects($this->never())->method('fetchAll');
 
         $resolver = $this->resolver();
 
-        self::assertSame([], $resolver->resolveValue('fit', null));
-        self::assertSame([], $resolver->resolveValue('fit', ''));
-        self::assertSame([], $resolver->resolveValue('fit', 'not-an-id'));
-        self::assertNull($resolver->getLabel('fit', null));
-        self::assertNull($resolver->getLabel('fit', ''));
+        $this->assertSame([], $resolver->resolveValue('fit', null));
+        $this->assertSame([], $resolver->resolveValue('fit', ''));
+        $this->assertSame([], $resolver->resolveValue('fit', 'not-an-id'));
+        $this->assertNull($resolver->getLabel('fit', null));
+        $this->assertNull($resolver->getLabel('fit', ''));
     }
 
     public function testTheSameOptionIsAskedAboutOnce(): void
@@ -271,13 +271,13 @@ final class AttributeOptionLabelResolverTest extends TestCase
         $this->attributeIs($this->tableSourced());
         $this->rows[0] = [['option_id' => '247', 'label' => 'Ceil Blue']];
 
-        $this->connection->expects(self::once())->method('fetchAll');
+        $this->connection->expects($this->once())->method('fetchAll');
 
         $resolver = $this->resolver();
 
-        self::assertSame('Ceil Blue', $resolver->getLabel('color', 247));
-        self::assertSame('Ceil Blue', $resolver->getLabel('color', 247));
-        self::assertSame([247 => 'Ceil Blue'], $resolver->getLabels('color', [247]));
+        $this->assertSame('Ceil Blue', $resolver->getLabel('color', 247));
+        $this->assertSame('Ceil Blue', $resolver->getLabel('color', 247));
+        $this->assertSame([247 => 'Ceil Blue'], $resolver->getLabels('color', [247]));
     }
 
     public function testEachStoreIsRememberedSeparately(): void
@@ -288,21 +288,21 @@ final class AttributeOptionLabelResolverTest extends TestCase
 
         $resolver = $this->resolver();
 
-        self::assertSame('Ceil Blue', $resolver->getLabel('color', 247, 1));
-        self::assertSame('Bleu Ciel', $resolver->getLabel('color', 247, 2));
-        self::assertSame('Ceil Blue', $resolver->getLabel('color', 247, 1));
+        $this->assertSame('Ceil Blue', $resolver->getLabel('color', 247, 1));
+        $this->assertSame('Bleu Ciel', $resolver->getLabel('color', 247, 2));
+        $this->assertSame('Ceil Blue', $resolver->getLabel('color', 247, 1));
     }
 
     public function testAnUnknownOptionIsAskedAboutOnce(): void
     {
         $this->attributeIs($this->tableSourced());
 
-        $this->connection->expects(self::once())->method('fetchAll');
+        $this->connection->expects($this->once())->method('fetchAll');
 
         $resolver = $this->resolver();
 
-        self::assertNull($resolver->getLabel('color', 999));
-        self::assertNull($resolver->getLabel('color', 999));
+        $this->assertNull($resolver->getLabel('color', 999));
+        $this->assertNull($resolver->getLabel('color', 999));
     }
 
     public function testLabelsComeBackInTheOrderTheyWereAskedFor(): void
@@ -313,7 +313,7 @@ final class AttributeOptionLabelResolverTest extends TestCase
             ['option_id' => '12', 'label' => 'Petite'],
         ];
 
-        self::assertSame([12 => 'Petite', 47 => 'Tall'], $this->resolver()->getLabels('fit', [12, 47, 12]));
+        $this->assertSame([12 => 'Petite', 47 => 'Tall'], $this->resolver()->getLabels('fit', [12, 47, 12]));
     }
 
     private function resolver(): AttributeOptionLabelResolver

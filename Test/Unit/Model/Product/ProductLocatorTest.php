@@ -20,7 +20,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-final class ProductLocatorTest extends TestCase
+class ProductLocatorTest extends TestCase
 {
     private ProductRepositoryInterface&MockObject $repository;
     private StoreScopeInterface&MockObject $storeScope;
@@ -42,7 +42,7 @@ final class ProductLocatorTest extends TestCase
         $product = $this->product('SKU-1', 10);
         $this->repository->method('get')->willReturn($product);
 
-        self::assertSame($product, $this->locator->findBySku('SKU-1'));
+        $this->assertSame($product, $this->locator->findBySku('SKU-1'));
     }
 
     /**
@@ -54,7 +54,7 @@ final class ProductLocatorTest extends TestCase
         $this->repository->method('get')
             ->willThrowException(new NoSuchEntityException(__('gone')));
 
-        self::assertNull($this->locator->findBySku('GONE'));
+        $this->assertNull($this->locator->findBySku('GONE'));
     }
 
     /**
@@ -79,15 +79,15 @@ final class ProductLocatorTest extends TestCase
         try {
             $this->locator->getBySku('SKU-404');
 
-            self::fail('Expected a NoSuchEntityException.');
+            $this->fail('Expected a NoSuchEntityException.');
         } catch (NoSuchEntityException $e) {
-            self::assertStringContainsString('SKU-404', $e->getMessage());
+            $this->assertStringContainsString('SKU-404', $e->getMessage());
         }
     }
 
     public function testTheSameSkuIsLoadedOnce(): void
     {
-        $this->repository->expects(self::once())
+        $this->repository->expects($this->once())
             ->method('get')
             ->willReturn($this->product('SKU-1', 10));
 
@@ -101,12 +101,12 @@ final class ProductLocatorTest extends TestCase
      */
     public function testAMissIsRememberedAsWell(): void
     {
-        $this->repository->expects(self::once())
+        $this->repository->expects($this->once())
             ->method('get')
             ->willThrowException(new NoSuchEntityException(__('gone')));
 
-        self::assertNull($this->locator->findBySku('GONE'));
-        self::assertNull($this->locator->findBySku('GONE'));
+        $this->assertNull($this->locator->findBySku('GONE'));
+        $this->assertNull($this->locator->findBySku('GONE'));
     }
 
     /**
@@ -118,16 +118,16 @@ final class ProductLocatorTest extends TestCase
         $storeOne = $this->product('SKU-1', 10);
         $storeTwo = $this->product('SKU-1', 10);
 
-        $this->repository->expects(self::exactly(2))
+        $this->repository->expects($this->exactly(2))
             ->method('get')
             ->willReturnCallback(
                 static fn (string $sku, bool $edit, ?int $storeId): ProductInterface
                     => $storeId === 2 ? $storeTwo : $storeOne
             );
 
-        self::assertSame($storeOne, $this->locator->findBySku('SKU-1', 1));
-        self::assertSame($storeTwo, $this->locator->findBySku('SKU-1', 2));
-        self::assertSame($storeOne, $this->locator->findBySku('SKU-1', 1));
+        $this->assertSame($storeOne, $this->locator->findBySku('SKU-1', 1));
+        $this->assertSame($storeTwo, $this->locator->findBySku('SKU-1', 2));
+        $this->assertSame($storeOne, $this->locator->findBySku('SKU-1', 1));
     }
 
     /**
@@ -149,13 +149,13 @@ final class ProductLocatorTest extends TestCase
 
         $locator = new ProductLocator($this->repository, $storeScope, $this->memo);
 
-        self::assertSame($storeOne, $locator->findBySku('SKU-1'));
-        self::assertSame($storeTwo, $locator->findBySku('SKU-1'));
+        $this->assertSame($storeOne, $locator->findBySku('SKU-1'));
+        $this->assertSame($storeTwo, $locator->findBySku('SKU-1'));
     }
 
     public function testTheStoreIdIsPassedToTheRepository(): void
     {
-        $this->repository->expects(self::once())
+        $this->repository->expects($this->once())
             ->method('get')
             ->with('SKU-1', false, 7)
             ->willReturn($this->product('SKU-1', 10));
@@ -165,14 +165,14 @@ final class ProductLocatorTest extends TestCase
 
     public function testABlankSkuIsNotAskedAbout(): void
     {
-        $this->repository->expects(self::never())->method('get');
+        $this->repository->expects($this->never())->method('get');
 
-        self::assertNull($this->locator->findBySku('   '));
+        $this->assertNull($this->locator->findBySku('   '));
     }
 
     public function testSurroundingWhitespaceIsTrimmed(): void
     {
-        $this->repository->expects(self::once())
+        $this->repository->expects($this->once())
             ->method('get')
             ->with('SKU-1', false, 1)
             ->willReturn($this->product('SKU-1', 10));
@@ -184,31 +184,31 @@ final class ProductLocatorTest extends TestCase
     {
         $product = $this->product('SKU-1', 10);
 
-        $this->repository->expects(self::once())->method('get')->willReturn($product);
-        $this->repository->expects(self::never())->method('getById');
+        $this->repository->expects($this->once())->method('get')->willReturn($product);
+        $this->repository->expects($this->never())->method('getById');
 
         $this->locator->findBySku('SKU-1');
 
-        self::assertSame($product, $this->locator->findById(10));
+        $this->assertSame($product, $this->locator->findById(10));
     }
 
     public function testAProductLoadedByIdIsAlsoFoundBySku(): void
     {
         $product = $this->product('SKU-1', 10);
 
-        $this->repository->expects(self::once())->method('getById')->willReturn($product);
-        $this->repository->expects(self::never())->method('get');
+        $this->repository->expects($this->once())->method('getById')->willReturn($product);
+        $this->repository->expects($this->never())->method('get');
 
         $this->locator->findById(10);
 
-        self::assertSame($product, $this->locator->findBySku('SKU-1'));
+        $this->assertSame($product, $this->locator->findBySku('SKU-1'));
     }
 
     public function testAnIdOfZeroIsNotAskedAbout(): void
     {
-        $this->repository->expects(self::never())->method('getById');
+        $this->repository->expects($this->never())->method('getById');
 
-        self::assertNull($this->locator->findById(0));
+        $this->assertNull($this->locator->findById(0));
     }
 
     public function testGetByIdThrowsWithTheIdInTheMessage(): void
@@ -219,9 +219,9 @@ final class ProductLocatorTest extends TestCase
         try {
             $this->locator->getById(4242);
 
-            self::fail('Expected a NoSuchEntityException.');
+            $this->fail('Expected a NoSuchEntityException.');
         } catch (NoSuchEntityException $e) {
-            self::assertStringContainsString('4242', $e->getMessage());
+            $this->assertStringContainsString('4242', $e->getMessage());
         }
     }
 
@@ -240,11 +240,11 @@ final class ProductLocatorTest extends TestCase
         $this->locator->findBySku('SKU-1', 2);
         $this->locator->findById(10, 1);
 
-        self::assertGreaterThan(0, $this->memo->count());
+        $this->assertGreaterThan(0, $this->memo->count());
 
         $this->locator->forget('SKU-1');
 
-        self::assertSame(0, $this->memo->count(), 'Nothing about this product may survive its save.');
+        $this->assertSame(0, $this->memo->count(), 'Nothing about this product may survive its save.');
     }
 
     /**
@@ -257,7 +257,7 @@ final class ProductLocatorTest extends TestCase
         $this->locator->findBySku('SKU-1');
         $this->locator->forget('sku-1');
 
-        self::assertSame(0, $this->memo->count());
+        $this->assertSame(0, $this->memo->count());
     }
 
     /**
@@ -266,7 +266,7 @@ final class ProductLocatorTest extends TestCase
      */
     public function testForgetAlsoDropsARememberedMiss(): void
     {
-        $this->repository->expects(self::exactly(2))
+        $this->repository->expects($this->exactly(2))
             ->method('get')
             ->willThrowException(new NoSuchEntityException(__('gone')));
 
@@ -288,8 +288,8 @@ final class ProductLocatorTest extends TestCase
 
         $this->locator->forget('SKU-1');
 
-        self::assertGreaterThan(0, $this->memo->count());
-        self::assertSame($two, $this->locator->findBySku('SKU-2'));
+        $this->assertGreaterThan(0, $this->memo->count());
+        $this->assertSame($two, $this->locator->findBySku('SKU-2'));
     }
 
     public function testClearEmptiesTheMemo(): void
@@ -299,7 +299,7 @@ final class ProductLocatorTest extends TestCase
         $this->locator->findBySku('SKU-1');
         $this->locator->clear();
 
-        self::assertSame(0, $this->memo->count());
+        $this->assertSame(0, $this->memo->count());
     }
 
     /**
@@ -318,7 +318,7 @@ final class ProductLocatorTest extends TestCase
             $locator->findBySku('SKU-' . $i);
         }
 
-        self::assertLessThanOrEqual(4, $memo->count());
+        $this->assertLessThanOrEqual(4, $memo->count());
     }
 
     private function product(string $sku, int $id): ProductInterface&MockObject

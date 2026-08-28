@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * What reading the catalogue costs, as the amount being read grows.
  */
-final class CatalogueReadCostTest extends TestCase
+class CatalogueReadCostTest extends TestCase
 {
     use BudgetAssertions;
 
@@ -47,7 +47,7 @@ final class CatalogueReadCostTest extends TestCase
      */
     public function testLoadingManySkusCostsTheSameAsLoadingOne(): void
     {
-        self::assertConstantCost(
+        $this->assertConstantCost(
             'queries while loading products by SKU',
             function (int $skus): int {
                 $this->collections = 0;
@@ -65,7 +65,7 @@ final class CatalogueReadCostTest extends TestCase
      */
     public function testAnOversizedBatchIsChunkedRatherThanSplitPerSku(): void
     {
-        self::assertCostPerBatch(
+        $this->assertCostPerBatch(
             'queries while loading a catalogue-sized batch',
             100,
             function (int $skus): int {
@@ -96,8 +96,8 @@ final class CatalogueReadCostTest extends TestCase
             }
         );
 
-        self::assertSame(1000, $handed, 'Every SKU should still reach the callback.');
-        self::assertLessThanOrEqual(
+        $this->assertSame(1000, $handed, 'Every SKU should still reach the callback.');
+        $this->assertLessThanOrEqual(
             100,
             $largestBatchHandedOver,
             'The callback was handed more than a chunk, so the chunks are being accumulated first.'
@@ -117,7 +117,7 @@ final class CatalogueReadCostTest extends TestCase
         $locator->findBySku('SHIRT', 1);
         $locator->findBySku('SHIRT', 1);
 
-        self::assertSame(1, $loads, 'The memo should have answered the second and third asks.');
+        $this->assertSame(1, $loads, 'The memo should have answered the second and third asks.');
     }
 
     /**
@@ -131,7 +131,7 @@ final class CatalogueReadCostTest extends TestCase
         $locator->findBySku('DELETED-SKU', 1);
         $locator->findBySku('DELETED-SKU', 1);
 
-        self::assertSame(1, $loads);
+        $this->assertSame(1, $loads);
     }
 
     /**
@@ -146,7 +146,7 @@ final class CatalogueReadCostTest extends TestCase
             $memo->set('sku_' . $i, ['a row of product data', $i]);
         }
 
-        self::assertSame(100, $memo->count(), 'An unbounded memo is how a long-running consumer runs out of memory.');
+        $this->assertSame(100, $memo->count(), 'An unbounded memo is how a long-running consumer runs out of memory.');
     }
 
     /**
@@ -164,7 +164,7 @@ final class CatalogueReadCostTest extends TestCase
             $memo->get('hot');
         }
 
-        self::assertTrue($memo->has('hot'), 'The entry asked for on every iteration was evicted anyway.');
+        $this->assertTrue($memo->has('hot'), 'The entry asked for on every iteration was evicted anyway.');
     }
 
     private function loader(int $chunkSize = 500): ProductBatchLoader

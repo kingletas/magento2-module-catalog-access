@@ -20,7 +20,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-final class ProductBatchLoaderTest extends TestCase
+class ProductBatchLoaderTest extends TestCase
 {
     private CollectionFactory&MockObject $collectionFactory;
     private ConfigurableParentSkuResolverInterface&MockObject $parentSkuResolver;
@@ -57,8 +57,8 @@ final class ProductBatchLoaderTest extends TestCase
 
         $found = $this->loader()->loadBySkus(['SKU-1', 'SKU-2']);
 
-        self::assertSame(['SKU-1', 'SKU-2'], array_keys($found));
-        self::assertCount(1, $this->collections, 'One collection, not one per SKU.');
+        $this->assertSame(['SKU-1', 'SKU-2'], array_keys($found));
+        $this->assertCount(1, $this->collections, 'One collection, not one per SKU.');
     }
 
     /**
@@ -71,7 +71,7 @@ final class ProductBatchLoaderTest extends TestCase
 
         $this->loader()->loadBySkus($skus);
 
-        self::assertCount(1, $this->collections);
+        $this->assertCount(1, $this->collections);
     }
 
     /**
@@ -83,8 +83,8 @@ final class ProductBatchLoaderTest extends TestCase
 
         $this->loader(chunkSize: 2)->loadBySkus($skus);
 
-        self::assertCount(3, $this->collections);
-        self::assertSame([['SKU-1', 'SKU-2'], ['SKU-3', 'SKU-4'], ['SKU-5']], array_map(
+        $this->assertCount(3, $this->collections);
+        $this->assertSame([['SKU-1', 'SKU-2'], ['SKU-3', 'SKU-4'], ['SKU-5']], array_map(
             static fn (array $filter): array => $filter[1]['in'],
             $this->filters
         ));
@@ -100,15 +100,15 @@ final class ProductBatchLoaderTest extends TestCase
 
         $found = $this->loader()->loadBySkus(['abc-1']);
 
-        self::assertArrayHasKey('abc-1', $found);
-        self::assertSame('ABC-1', $found['abc-1']->getSku());
+        $this->assertArrayHasKey('abc-1', $found);
+        $this->assertSame('ABC-1', $found['abc-1']->getSku());
     }
 
     public function testDuplicatesAndBlanksAreIgnored(): void
     {
         $this->loader()->loadBySkus(['SKU-1', ' SKU-1 ', 'sku-1', '', '   ']);
 
-        self::assertSame([['SKU-1']], array_map(
+        $this->assertSame([['SKU-1']], array_map(
             static fn (array $filter): array => $filter[1]['in'],
             $this->filters
         ));
@@ -116,10 +116,10 @@ final class ProductBatchLoaderTest extends TestCase
 
     public function testNothingToLoadIsNotAQuery(): void
     {
-        $this->collectionFactory->expects(self::never())->method('create');
+        $this->collectionFactory->expects($this->never())->method('create');
 
-        self::assertSame([], $this->loader()->loadBySkus(['', '  ']));
-        self::assertSame([], $this->loader()->loadByIds([0, -1]));
+        $this->assertSame([], $this->loader()->loadBySkus(['', '  ']));
+        $this->assertSame([], $this->loader()->loadByIds([0, -1]));
     }
 
     public function testMissingSkusAreSimplyAbsent(): void
@@ -128,7 +128,7 @@ final class ProductBatchLoaderTest extends TestCase
 
         $found = $this->loader()->loadBySkus(['SKU-1', 'GONE']);
 
-        self::assertSame(['SKU-1'], array_keys($found));
+        $this->assertSame(['SKU-1'], array_keys($found));
     }
 
     public function testTheStoreIsSetOnTheCollection(): void
@@ -139,7 +139,7 @@ final class ProductBatchLoaderTest extends TestCase
         $this->collectionFactory->method('create')->willReturnCallback(
             function () use (&$collection): Collection {
                 $collection = $this->newCollection();
-                $collection->expects(self::once())->method('setStoreId')->with(7);
+                $collection->expects($this->once())->method('setStoreId')->with(7);
 
                 return $collection;
             }
@@ -147,7 +147,7 @@ final class ProductBatchLoaderTest extends TestCase
 
         $this->loader()->loadBySkus(['SKU-1'], 7);
 
-        self::assertNotNull($collection);
+        $this->assertNotNull($collection);
     }
 
     public function testANullStoreMeansTheCurrentOne(): void
@@ -158,7 +158,7 @@ final class ProductBatchLoaderTest extends TestCase
         $this->collectionFactory->method('create')->willReturnCallback(
             function () use (&$collection): Collection {
                 $collection = $this->newCollection();
-                $collection->expects(self::once())->method('setStoreId')->with(1);
+                $collection->expects($this->once())->method('setStoreId')->with(1);
 
                 return $collection;
             }
@@ -166,7 +166,7 @@ final class ProductBatchLoaderTest extends TestCase
 
         $this->loader()->loadBySkus(['SKU-1']);
 
-        self::assertNotNull($collection);
+        $this->assertNotNull($collection);
     }
 
     /**
@@ -181,7 +181,7 @@ final class ProductBatchLoaderTest extends TestCase
         $this->collectionFactory->method('create')->willReturnCallback(
             function () use (&$collection): Collection {
                 $collection = $this->newCollection();
-                $collection->expects(self::once())
+                $collection->expects($this->once())
                     ->method('setFlag')
                     ->with('has_stock_status_filter', true);
 
@@ -191,7 +191,7 @@ final class ProductBatchLoaderTest extends TestCase
 
         $this->loader()->loadBySkus(['SKU-1']);
 
-        self::assertNotNull($collection);
+        $this->assertNotNull($collection);
     }
 
     /**
@@ -206,7 +206,7 @@ final class ProductBatchLoaderTest extends TestCase
         $this->collectionFactory->method('create')->willReturnCallback(
             function () use (&$collection): Collection {
                 $collection = $this->newCollection();
-                $collection->expects(self::never())->method('addStoreFilter');
+                $collection->expects($this->never())->method('addStoreFilter');
 
                 return $collection;
             }
@@ -214,7 +214,7 @@ final class ProductBatchLoaderTest extends TestCase
 
         $this->loader()->loadBySkus(['SKU-1']);
 
-        self::assertNotNull($collection);
+        $this->assertNotNull($collection);
     }
 
     /**
@@ -229,7 +229,7 @@ final class ProductBatchLoaderTest extends TestCase
         $this->collectionFactory->method('create')->willReturnCallback(
             function () use (&$collection): Collection {
                 $collection = $this->newCollection();
-                $collection->expects(self::once())->method('addAttributeToSelect')->with('*');
+                $collection->expects($this->once())->method('addAttributeToSelect')->with('*');
 
                 return $collection;
             }
@@ -237,7 +237,7 @@ final class ProductBatchLoaderTest extends TestCase
 
         $this->loader()->loadBySkus(['SKU-1']);
 
-        self::assertNotNull($collection);
+        $this->assertNotNull($collection);
     }
 
     public function testAttributesGivenAtTheCallSiteWin(): void
@@ -248,7 +248,7 @@ final class ProductBatchLoaderTest extends TestCase
         $this->collectionFactory->method('create')->willReturnCallback(
             function () use (&$collection): Collection {
                 $collection = $this->newCollection();
-                $collection->expects(self::once())
+                $collection->expects($this->once())
                     ->method('addAttributeToSelect')
                     ->with(['name', 'price']);
 
@@ -258,7 +258,7 @@ final class ProductBatchLoaderTest extends TestCase
 
         $this->loader()->loadBySkus(['SKU-1'], null, ['name', 'price']);
 
-        self::assertNotNull($collection);
+        $this->assertNotNull($collection);
     }
 
     public function testLoadByIdsIsKeyedByIntegerId(): void
@@ -267,8 +267,8 @@ final class ProductBatchLoaderTest extends TestCase
 
         $found = $this->loader()->loadByIds(['10', 11, 10]);
 
-        self::assertSame([10, 11], array_keys($found));
-        self::assertSame([[10, 11]], $this->filters);
+        $this->assertSame([10, 11], array_keys($found));
+        $this->assertSame([[10, 11]], $this->filters);
     }
 
     public function testParentsAreResolvedThenLoadedOnce(): void
@@ -284,11 +284,11 @@ final class ProductBatchLoaderTest extends TestCase
 
         $found = $this->loader()->loadParentsBySkus(['CHILD-A', 'CHILD-B', 'CHILD-C']);
 
-        self::assertSame(['CHILD-A', 'CHILD-B', 'CHILD-C'], array_keys($found));
-        self::assertSame($parentOne, $found['CHILD-A']);
-        self::assertSame($parentOne, $found['CHILD-B'], 'Two children of one configurable share one loaded parent.');
-        self::assertCount(1, $this->collections);
-        self::assertSame([['PARENT-1', 'PARENT-2']], array_map(
+        $this->assertSame(['CHILD-A', 'CHILD-B', 'CHILD-C'], array_keys($found));
+        $this->assertSame($parentOne, $found['CHILD-A']);
+        $this->assertSame($parentOne, $found['CHILD-B'], 'Two children of one configurable share one loaded parent.');
+        $this->assertCount(1, $this->collections);
+        $this->assertSame([['PARENT-1', 'PARENT-2']], array_map(
             static fn (array $filter): array => $filter[1]['in'],
             $this->filters
         ));
@@ -301,15 +301,15 @@ final class ProductBatchLoaderTest extends TestCase
 
         $found = $this->loader()->loadParentsBySkus(['CHILD-A', 'STANDALONE']);
 
-        self::assertSame([], $found);
+        $this->assertSame([], $found);
     }
 
     public function testNoParentsMeansNoProductQuery(): void
     {
         $this->parentSkuResolver->method('resolveMany')->willReturn([]);
-        $this->collectionFactory->expects(self::never())->method('create');
+        $this->collectionFactory->expects($this->never())->method('create');
 
-        self::assertSame([], $this->loader()->loadParentsBySkus(['STANDALONE']));
+        $this->assertSame([], $this->loader()->loadParentsBySkus(['STANDALONE']));
     }
 
     /**
@@ -328,9 +328,9 @@ final class ProductBatchLoaderTest extends TestCase
             }
         );
 
-        self::assertCount(2, $chunks, 'One call per chunk, not one per product and not one at the end.');
-        self::assertSame(['SKU-1', 'SKU-2'], $chunks[0]);
-        self::assertSame(4, $handed);
+        $this->assertCount(2, $chunks, 'One call per chunk, not one per product and not one at the end.');
+        $this->assertSame(['SKU-1', 'SKU-2'], $chunks[0]);
+        $this->assertSame(4, $handed);
     }
 
     public function testEachBySkusKeysChunksTheWayLoadBySkusKeysItsResult(): void
@@ -342,7 +342,7 @@ final class ProductBatchLoaderTest extends TestCase
             $seen = $products;
         });
 
-        self::assertArrayHasKey('abc-1', $seen);
+        $this->assertArrayHasKey('abc-1', $seen);
     }
 
     public function testEachBySkusIsNotCalledWithAnEmptyChunk(): void
@@ -354,8 +354,8 @@ final class ProductBatchLoaderTest extends TestCase
             $calls++;
         });
 
-        self::assertSame(0, $calls);
-        self::assertSame(0, $handed);
+        $this->assertSame(0, $calls);
+        $this->assertSame(0, $handed);
     }
 
     /**

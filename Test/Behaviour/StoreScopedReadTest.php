@@ -28,7 +28,7 @@ use RuntimeException;
 /**
  * Reading the catalogue in another store, and coming back.
  */
-final class StoreScopedReadTest extends TestCase
+class StoreScopedReadTest extends TestCase
 {
     /** @var array<int, string> Emulation calls, in order. */
     private array $emulation = [];
@@ -49,8 +49,8 @@ final class StoreScopedReadTest extends TestCase
     {
         $seen = $this->scope()->run(2, static fn (int $storeId): int => $storeId);
 
-        self::assertSame(2, $seen);
-        self::assertSame(['start:2:frontend', 'stop'], $this->emulation);
+        $this->assertSame(2, $seen);
+        $this->assertSame(['start:2:frontend', 'stop'], $this->emulation);
     }
 
     /**
@@ -63,12 +63,12 @@ final class StoreScopedReadTest extends TestCase
             $this->scope()->run(2, static function (): void {
                 throw new RuntimeException('the callback failed');
             });
-            self::fail('The exception should have propagated.');
+            $this->fail('The exception should have propagated.');
         } catch (RuntimeException $e) {
-            self::assertSame('the callback failed', $e->getMessage());
+            $this->assertSame('the callback failed', $e->getMessage());
         }
 
-        self::assertSame(['start:2:frontend', 'stop'], $this->emulation);
+        $this->assertSame(['start:2:frontend', 'stop'], $this->emulation);
     }
 
     public function testLeavingANestedScopeReturnsToTheEnclosingStore(): void
@@ -83,8 +83,8 @@ final class StoreScopedReadTest extends TestCase
             $storesSeenAfterTheInnerBlock[] = $outer;
         });
 
-        self::assertSame([2], $storesSeenAfterTheInnerBlock);
-        self::assertSame(
+        $this->assertSame([2], $storesSeenAfterTheInnerBlock);
+        $this->assertSame(
             [
                 'start:2:frontend',
                 // The outer scope is stood down before the inner starts,
@@ -108,8 +108,8 @@ final class StoreScopedReadTest extends TestCase
     {
         $seen = $this->scope()->run(1, static fn (int $storeId): int => $storeId);
 
-        self::assertSame(1, $seen);
-        self::assertSame([], $this->emulation, 'Store 1 is already the current store.');
+        $this->assertSame(1, $seen);
+        $this->assertSame([], $this->emulation, 'Store 1 is already the current store.');
     }
 
     /**
@@ -119,8 +119,8 @@ final class StoreScopedReadTest extends TestCase
     {
         $results = $this->scope()->runForEach([2, 3], static fn (int $storeId): string => 'ran in ' . $storeId);
 
-        self::assertSame([2 => 'ran in 2', 3 => 'ran in 3'], $results);
-        self::assertSame(
+        $this->assertSame([2 => 'ran in 2', 3 => 'ran in 3'], $results);
+        $this->assertSame(
             ['start:2:frontend', 'stop', 'start:3:frontend', 'stop'],
             $this->emulation
         );
@@ -134,7 +134,7 @@ final class StoreScopedReadTest extends TestCase
     {
         $this->scope(currentArea: Area::AREA_ADMINHTML)->run(1, static fn (int $s): int => $s);
 
-        self::assertSame(['start:1:frontend', 'stop'], $this->emulation);
+        $this->assertSame(['start:1:frontend', 'stop'], $this->emulation);
     }
 
     /**
@@ -149,8 +149,8 @@ final class StoreScopedReadTest extends TestCase
 
         $locator = $this->locator();
 
-        self::assertSame('Scrub Top', $locator->findBySku('SHIRT', 1)?->getName());
-        self::assertSame('Blouse de bloc', $locator->findBySku('SHIRT', 2)?->getName());
+        $this->assertSame('Scrub Top', $locator->findBySku('SHIRT', 1)?->getName());
+        $this->assertSame('Blouse de bloc', $locator->findBySku('SHIRT', 2)?->getName());
     }
 
     /**
@@ -160,7 +160,7 @@ final class StoreScopedReadTest extends TestCase
     {
         $locator = $this->locator();
 
-        self::assertNull($locator->findBySku('DELETED-SKU', 1));
+        $this->assertNull($locator->findBySku('DELETED-SKU', 1));
 
         $this->expectException(NoSuchEntityException::class);
         $locator->getBySku('DELETED-SKU', 1);

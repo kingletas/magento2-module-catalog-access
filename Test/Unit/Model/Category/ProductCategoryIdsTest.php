@@ -20,7 +20,7 @@ use Magento\Framework\DB\Select;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-final class ProductCategoryIdsTest extends TestCase
+class ProductCategoryIdsTest extends TestCase
 {
     private AdapterInterface&MockObject $connection;
     private ResourceConnection&MockObject $resourceConnection;
@@ -79,7 +79,7 @@ final class ProductCategoryIdsTest extends TestCase
             ['product_id' => '11', 'category_id' => '3'],
         ];
 
-        self::assertSame(
+        $this->assertSame(
             [10 => [3, 7], 11 => [3]],
             $this->resolver()->getAssignedCategoryIds([10, 11])
         );
@@ -91,7 +91,7 @@ final class ProductCategoryIdsTest extends TestCase
      */
     public function testAWholeCartIsOneQuery(): void
     {
-        $this->connection->expects(self::once())->method('fetchAll');
+        $this->connection->expects($this->once())->method('fetchAll');
 
         $this->resolver()->getAssignedCategoryIds(range(1, 40));
     }
@@ -100,7 +100,7 @@ final class ProductCategoryIdsTest extends TestCase
     {
         $this->resolver()->getAssignedCategoryIds([10]);
 
-        self::assertSame(['catalog_category_product'], $this->tables);
+        $this->assertSame(['catalog_category_product'], $this->tables);
     }
 
     /**
@@ -111,14 +111,14 @@ final class ProductCategoryIdsTest extends TestCase
     {
         $this->resolver()->getVisibleCategoryIds([10], 4);
 
-        self::assertSame(['catalog_category_product_index_store4'], $this->tables);
+        $this->assertSame(['catalog_category_product_index_store4'], $this->tables);
     }
 
     public function testVisibleWithoutAStoreUsesTheCurrentOne(): void
     {
         $this->resolver()->getVisibleCategoryIds([10]);
 
-        self::assertSame(['catalog_category_product_index_store1'], $this->tables);
+        $this->assertSame(['catalog_category_product_index_store1'], $this->tables);
     }
 
     public function testTheTwoQuestionsDoNotShareAnAnswer(): void
@@ -131,8 +131,8 @@ final class ProductCategoryIdsTest extends TestCase
 
         $resolver = $this->resolver();
 
-        self::assertSame([10 => [3]], $resolver->getAssignedCategoryIds([10]));
-        self::assertSame(
+        $this->assertSame([10 => [3]], $resolver->getAssignedCategoryIds([10]));
+        $this->assertSame(
             [10 => [3, 2]],
             $resolver->getVisibleCategoryIds([10], 1),
             'The anchor ancestor is in the index and not in the assignments.'
@@ -146,16 +146,16 @@ final class ProductCategoryIdsTest extends TestCase
 
         $resolver = $this->resolver();
 
-        self::assertSame([10 => [3]], $resolver->getVisibleCategoryIds([10], 1));
-        self::assertSame([10 => [9]], $resolver->getVisibleCategoryIds([10], 2));
-        self::assertSame([10 => [3]], $resolver->getVisibleCategoryIds([10], 1));
+        $this->assertSame([10 => [3]], $resolver->getVisibleCategoryIds([10], 1));
+        $this->assertSame([10 => [9]], $resolver->getVisibleCategoryIds([10], 2));
+        $this->assertSame([10 => [3]], $resolver->getVisibleCategoryIds([10], 1));
     }
 
     public function testTheSameProductIsAskedAboutOnce(): void
     {
         $this->rows[0] = [['product_id' => '10', 'category_id' => '3']];
 
-        $this->connection->expects(self::once())->method('fetchAll');
+        $this->connection->expects($this->once())->method('fetchAll');
 
         $resolver = $this->resolver();
 
@@ -169,12 +169,12 @@ final class ProductCategoryIdsTest extends TestCase
      */
     public function testAnUncategorisedProductIsAlsoRemembered(): void
     {
-        $this->connection->expects(self::once())->method('fetchAll');
+        $this->connection->expects($this->once())->method('fetchAll');
 
         $resolver = $this->resolver();
 
-        self::assertSame([], $resolver->getAssignedCategoryIds([10]));
-        self::assertSame([], $resolver->getAssignedCategoryIds([10]));
+        $this->assertSame([], $resolver->getAssignedCategoryIds([10]));
+        $this->assertSame([], $resolver->getAssignedCategoryIds([10]));
     }
 
     public function testOnlyTheProductsNotYetKnownAreQueriedAgain(): void
@@ -186,7 +186,7 @@ final class ProductCategoryIdsTest extends TestCase
         $resolver->getAssignedCategoryIds([10]);
         $resolver->getAssignedCategoryIds([10, 11]);
 
-        self::assertContains(['product_id IN (?)', [11]], $this->conditions[1]);
+        $this->assertContains(['product_id IN (?)', [11]], $this->conditions[1]);
     }
 
     public function testCategoriesComeBackInAdminSortOrder(): void
@@ -196,7 +196,7 @@ final class ProductCategoryIdsTest extends TestCase
             ['product_id' => '10', 'category_id' => '3'],
         ];
 
-        self::assertSame(
+        $this->assertSame(
             [10 => [7, 3]],
             $this->resolver()->getAssignedCategoryIds([10]),
             'The order the query returned, which is ordered by position.'
@@ -210,25 +210,25 @@ final class ProductCategoryIdsTest extends TestCase
             ['product_id' => '10', 'category_id' => '3'],
         ];
 
-        self::assertSame([10 => [3]], $this->resolver()->getAssignedCategoryIds([10]));
+        $this->assertSame([10 => [3]], $this->resolver()->getAssignedCategoryIds([10]));
     }
 
     public function testLongListsAreChunked(): void
     {
         $this->resolver(chunkSize: 2)->getAssignedCategoryIds([1, 2, 3, 4, 5]);
 
-        self::assertCount(3, $this->selects);
+        $this->assertCount(3, $this->selects);
     }
 
     public function testNothingToResolveIsNotAQuery(): void
     {
-        $this->connection->expects(self::never())->method('fetchAll');
+        $this->connection->expects($this->never())->method('fetchAll');
 
         $resolver = $this->resolver();
 
-        self::assertSame([], $resolver->getAssignedCategoryIds([]));
-        self::assertSame([], $resolver->getAssignedCategoryIds([0, -2]));
-        self::assertSame([], $resolver->getVisibleCategoryIds([]));
+        $this->assertSame([], $resolver->getAssignedCategoryIds([]));
+        $this->assertSame([], $resolver->getAssignedCategoryIds([0, -2]));
+        $this->assertSame([], $resolver->getVisibleCategoryIds([]));
     }
 
     public function testResultsAreKeyedInTheOrderAsked(): void
@@ -238,7 +238,7 @@ final class ProductCategoryIdsTest extends TestCase
             ['product_id' => '10', 'category_id' => '4'],
         ];
 
-        self::assertSame([10, 11], array_keys($this->resolver()->getAssignedCategoryIds([10, 11])));
+        $this->assertSame([10, 11], array_keys($this->resolver()->getAssignedCategoryIds([10, 11])));
     }
 
     private function resolver(int $chunkSize = 1000): ProductCategoryIds

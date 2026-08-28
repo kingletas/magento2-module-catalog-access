@@ -15,9 +15,9 @@ use Commerce\Foundation\Test\Support\ModuleWiringTestCase;
 /**
  * This module's `etc/` against the code it names.
  */
-final class WiringTest extends ModuleWiringTestCase
+class WiringTest extends ModuleWiringTestCase
 {
-    protected static function moduleDir(): string
+    protected function moduleDir(): string
     {
         return dirname(__DIR__, 2);
     }

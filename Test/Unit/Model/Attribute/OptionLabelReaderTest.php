@@ -24,7 +24,7 @@ use RuntimeException;
 /**
  * The two ways a label is read, and the choice between them.
  */
-final class OptionLabelReaderTest extends TestCase
+class OptionLabelReaderTest extends TestCase
 {
     private AdapterInterface&MockObject $connection;
     private OptionLabelReader $reader;
@@ -60,7 +60,7 @@ final class OptionLabelReaderTest extends TestCase
         $attribute = $this->createMock(AbstractAttribute::class);
         $attribute->method('usesSource')->willReturn(false);
 
-        self::assertSame([], $this->reader->labelsFor($attribute, [12, 47], 1));
+        $this->assertSame([], $this->reader->labelsFor($attribute, [12, 47], 1));
     }
 
     public function testATableSourcedAttributeIsReadFromTheOptionValueTables(): void
@@ -70,7 +70,7 @@ final class OptionLabelReaderTest extends TestCase
             ['option_id' => '47', 'label' => 'Tall'],
         ];
 
-        self::assertSame(
+        $this->assertSame(
             [12 => 'Petite', 47 => 'Tall'],
             $this->reader->labelsFor($this->attributeWithSource($this->createMock(TableSource::class)), [12, 47], 1)
         );
@@ -86,7 +86,7 @@ final class OptionLabelReaderTest extends TestCase
             ['option_id' => '47', 'label' => 'Tall'],
         ];
 
-        self::assertSame(
+        $this->assertSame(
             [47 => 'Tall'],
             $this->reader->labelsFor($this->attributeWithSource($this->createMock(TableSource::class)), [12, 47], 1)
         );
@@ -104,7 +104,7 @@ final class OptionLabelReaderTest extends TestCase
             ['value' => 2, 'label' => 'Disabled'],
         ]);
 
-        self::assertSame(
+        $this->assertSame(
             [1 => 'Enabled', 2 => 'Disabled'],
             $this->reader->labelsFor($this->attributeWithSource($source), [1, 2], 1)
         );
@@ -121,7 +121,7 @@ final class OptionLabelReaderTest extends TestCase
             ['value' => 9, 'label' => 'Slate'],
         ]);
 
-        self::assertSame(
+        $this->assertSame(
             [7 => 'Crimson', 9 => 'Slate'],
             $this->reader->labelsFor($this->attributeWithSource($source), [7, 9], 1)
         );
@@ -136,7 +136,7 @@ final class OptionLabelReaderTest extends TestCase
         $source = $this->createMock(BooleanSource::class);
         $source->method('getAllOptions')->willThrowException(new RuntimeException('no registry here'));
 
-        self::assertSame([], $this->reader->labelsFor($this->attributeWithSource($source), [1], 1));
+        $this->assertSame([], $this->reader->labelsFor($this->attributeWithSource($source), [1], 1));
     }
 
     public function testOnlyTheOptionIdsAskedForComeBack(): void
@@ -147,7 +147,7 @@ final class OptionLabelReaderTest extends TestCase
             ['value' => 2, 'label' => 'Disabled'],
         ]);
 
-        self::assertSame([2 => 'Disabled'], $this->reader->labelsFor($this->attributeWithSource($source), [2], 1));
+        $this->assertSame([2 => 'Disabled'], $this->reader->labelsFor($this->attributeWithSource($source), [2], 1));
     }
 
     private function attributeWithSource(object $source): AbstractAttribute&MockObject

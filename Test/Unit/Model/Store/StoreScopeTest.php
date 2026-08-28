@@ -21,7 +21,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-final class StoreScopeTest extends TestCase
+class StoreScopeTest extends TestCase
 {
     private StoreManagerInterface&MockObject $storeManager;
     private Emulation&MockObject $emulation;
@@ -60,7 +60,7 @@ final class StoreScopeTest extends TestCase
 
     public function testReturnsWhateverTheCallbackReturns(): void
     {
-        self::assertSame('result', $this->scope->run(2, static fn (): string => 'result'));
+        $this->assertSame('result', $this->scope->run(2, static fn (): string => 'result'));
     }
 
     public function testPassesTheResolvedStoreIdToTheCallback(): void
@@ -71,7 +71,7 @@ final class StoreScopeTest extends TestCase
             $seen = $storeId;
         });
 
-        self::assertSame(2, $seen);
+        $this->assertSame(2, $seen);
     }
 
     /**
@@ -84,19 +84,19 @@ final class StoreScopeTest extends TestCase
                 throw new RuntimeException('boom');
             });
 
-            self::fail('The exception should propagate.');
+            $this->fail('The exception should propagate.');
         } catch (RuntimeException $e) {
-            self::assertSame('boom', $e->getMessage());
+            $this->assertSame('boom', $e->getMessage());
         }
 
-        self::assertSame(['start:2:frontend', 'stop'], $this->calls);
+        $this->assertSame(['start:2:frontend', 'stop'], $this->calls);
     }
 
     public function testDoesNotEmulateTheStoreItIsAlreadyIn(): void
     {
         $this->scope->run(1, static fn (): bool => true);
 
-        self::assertSame([], $this->calls);
+        $this->assertSame([], $this->calls);
     }
 
     /**
@@ -106,7 +106,7 @@ final class StoreScopeTest extends TestCase
     {
         $this->scope->run(1, static fn (): bool => true, Area::AREA_ADMINHTML);
 
-        self::assertSame(['start:1:adminhtml', 'stop'], $this->calls);
+        $this->assertSame(['start:1:adminhtml', 'stop'], $this->calls);
     }
 
     public function testANullStoreIdRunsInPlace(): void
@@ -117,8 +117,8 @@ final class StoreScopeTest extends TestCase
             $seen = $storeId;
         });
 
-        self::assertSame([], $this->calls);
-        self::assertSame(1, $seen, 'A null store means the current one, and the callback is told which that is.');
+        $this->assertSame([], $this->calls);
+        $this->assertSame(1, $seen, 'A null store means the current one, and the callback is told which that is.');
     }
 
     /**
@@ -140,8 +140,8 @@ final class StoreScopeTest extends TestCase
             $this->calls[] = 'outer-work-again';
         });
 
-        self::assertSame(3, $inner);
-        self::assertSame(
+        $this->assertSame(3, $inner);
+        $this->assertSame(
             [
                 'start:2:frontend',
                 'outer-work',
@@ -166,15 +166,15 @@ final class StoreScopeTest extends TestCase
             });
         });
 
-        self::assertSame(['start:2:frontend', 'inner-work', 'stop'], $this->calls);
+        $this->assertSame(['start:2:frontend', 'inner-work', 'stop'], $this->calls);
     }
 
     public function testRunForEachEntersAndLeavesEachStoreInTurn(): void
     {
         $results = $this->scope->runForEach([2, 3], static fn (int $storeId): string => 'store-' . $storeId);
 
-        self::assertSame([2 => 'store-2', 3 => 'store-3'], $results);
-        self::assertSame(
+        $this->assertSame([2 => 'store-2', 3 => 'store-3'], $results);
+        $this->assertSame(
             ['start:2:frontend', 'stop', 'start:3:frontend', 'stop'],
             $this->calls,
             'Stores are visited in sequence, never nested: whatever one does, the next starts clean.'
@@ -189,7 +189,7 @@ final class StoreScopeTest extends TestCase
 
         $scope = new StoreScope($storeManager, $this->emulation, $this->design);
 
-        self::assertSame(0, $scope->getCurrentStoreId());
+        $this->assertSame(0, $scope->getCurrentStoreId());
     }
 
     private function currentStoreIs(int $storeId): void

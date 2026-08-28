@@ -17,7 +17,7 @@ use Magento\Framework\Phrase;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-final class AttributeValueReaderTest extends TestCase
+class AttributeValueReaderTest extends TestCase
 {
     private AttributeOptionLabelResolverInterface&MockObject $optionLabels;
     private AttributeValueReader $reader;
@@ -36,24 +36,24 @@ final class AttributeValueReaderTest extends TestCase
     {
         $entity = new DataObject(['url' => null]);
 
-        self::assertSame('', $this->reader->getString($entity, 'url'));
-        self::assertSame('', $this->reader->getString($entity, 'never_set'));
-        self::assertSame('placeholder', $this->reader->getString($entity, 'url', 'placeholder'));
+        $this->assertSame('', $this->reader->getString($entity, 'url'));
+        $this->assertSame('', $this->reader->getString($entity, 'never_set'));
+        $this->assertSame('placeholder', $this->reader->getString($entity, 'url', 'placeholder'));
     }
 
     public function testAStringComesBackUnchanged(): void
     {
         $entity = new DataObject(['name' => 'Ceil Blue Scrub Top']);
 
-        self::assertSame('Ceil Blue Scrub Top', $this->reader->getString($entity, 'name'));
+        $this->assertSame('Ceil Blue Scrub Top', $this->reader->getString($entity, 'name'));
     }
 
     public function testNumbersAreStringifiedRatherThanRefused(): void
     {
         $entity = new DataObject(['position' => 12, 'price' => 19.99]);
 
-        self::assertSame('12', $this->reader->getString($entity, 'position'));
-        self::assertSame('19.99', $this->reader->getString($entity, 'price'));
+        $this->assertSame('12', $this->reader->getString($entity, 'position'));
+        $this->assertSame('19.99', $this->reader->getString($entity, 'price'));
     }
 
     /**
@@ -64,7 +64,7 @@ final class AttributeValueReaderTest extends TestCase
     {
         $entity = new DataObject(['label' => new Phrase('Out of stock')]);
 
-        self::assertSame('Out of stock', $this->reader->getString($entity, 'label'));
+        $this->assertSame('Out of stock', $this->reader->getString($entity, 'label'));
     }
 
     /**
@@ -75,9 +75,9 @@ final class AttributeValueReaderTest extends TestCase
     {
         $entity = new DataObject(['fit' => ['Petite', 'Tall']]);
 
-        self::assertSame('', $this->reader->getString($entity, 'fit'));
-        self::assertSame('n/a', $this->reader->getString($entity, 'fit', 'n/a'));
-        self::assertStringNotContainsString('Array', $this->reader->getString($entity, 'fit'));
+        $this->assertSame('', $this->reader->getString($entity, 'fit'));
+        $this->assertSame('n/a', $this->reader->getString($entity, 'fit', 'n/a'));
+        $this->assertStringNotContainsString('Array', $this->reader->getString($entity, 'fit'));
     }
 
     /**
@@ -88,33 +88,33 @@ final class AttributeValueReaderTest extends TestCase
     {
         $entity = new DataObject(['description' => '']);
 
-        self::assertTrue($this->reader->has($entity, 'description'));
-        self::assertFalse($this->reader->has($entity, 'short_description'));
-        self::assertNull($this->reader->getStringOrNull($entity, 'description'));
-        self::assertNull($this->reader->getStringOrNull($entity, 'short_description'));
+        $this->assertTrue($this->reader->has($entity, 'description'));
+        $this->assertFalse($this->reader->has($entity, 'short_description'));
+        $this->assertNull($this->reader->getStringOrNull($entity, 'description'));
+        $this->assertNull($this->reader->getStringOrNull($entity, 'short_description'));
     }
 
     public function testIntegersFallBackRatherThanCollapsingToZero(): void
     {
         $entity = new DataObject(['qty' => '14', 'note' => 'not a number', 'zero' => '0']);
 
-        self::assertSame(14, $this->reader->getInt($entity, 'qty'));
-        self::assertSame(0, $this->reader->getInt($entity, 'zero'));
-        self::assertSame(
+        $this->assertSame(14, $this->reader->getInt($entity, 'qty'));
+        $this->assertSame(0, $this->reader->getInt($entity, 'zero'));
+        $this->assertSame(
             -1,
             $this->reader->getInt($entity, 'note', -1),
             '"abc" and 0 mean very different things to a quantity.'
         );
-        self::assertSame(-1, $this->reader->getInt($entity, 'missing', -1));
+        $this->assertSame(-1, $this->reader->getInt($entity, 'missing', -1));
     }
 
     public function testFloatsBehaveTheSameWay(): void
     {
         $entity = new DataObject(['price' => '19.99', 'weight' => 'heavy']);
 
-        self::assertSame(19.99, $this->reader->getFloat($entity, 'price'));
-        self::assertSame(1.0, $this->reader->getFloat($entity, 'weight', 1.0));
-        self::assertSame(0.0, $this->reader->getFloat($entity, 'missing'));
+        $this->assertSame(19.99, $this->reader->getFloat($entity, 'price'));
+        $this->assertSame(1.0, $this->reader->getFloat($entity, 'weight', 1.0));
+        $this->assertSame(0.0, $this->reader->getFloat($entity, 'missing'));
     }
 
     /**
@@ -133,23 +133,23 @@ final class AttributeValueReaderTest extends TestCase
             'real_bool' => true,
         ]);
 
-        self::assertFalse($this->reader->getBool($entity, 'zero_string'));
-        self::assertTrue($this->reader->getBool($entity, 'one_string'));
-        self::assertFalse($this->reader->getBool($entity, 'false_word'));
-        self::assertTrue($this->reader->getBool($entity, 'true_word'));
-        self::assertTrue($this->reader->getBool($entity, 'yes_word'));
-        self::assertFalse($this->reader->getBool($entity, 'no_word'));
-        self::assertTrue($this->reader->getBool($entity, 'real_bool'));
+        $this->assertFalse($this->reader->getBool($entity, 'zero_string'));
+        $this->assertTrue($this->reader->getBool($entity, 'one_string'));
+        $this->assertFalse($this->reader->getBool($entity, 'false_word'));
+        $this->assertTrue($this->reader->getBool($entity, 'true_word'));
+        $this->assertTrue($this->reader->getBool($entity, 'yes_word'));
+        $this->assertFalse($this->reader->getBool($entity, 'no_word'));
+        $this->assertTrue($this->reader->getBool($entity, 'real_bool'));
     }
 
     public function testAnUnsetBooleanTakesTheDefault(): void
     {
         $entity = new DataObject(['empty' => '', 'nothing' => null]);
 
-        self::assertTrue($this->reader->getBool($entity, 'empty', true));
-        self::assertTrue($this->reader->getBool($entity, 'nothing', true));
-        self::assertTrue($this->reader->getBool($entity, 'missing', true));
-        self::assertFalse($this->reader->getBool($entity, 'missing'));
+        $this->assertTrue($this->reader->getBool($entity, 'empty', true));
+        $this->assertTrue($this->reader->getBool($entity, 'nothing', true));
+        $this->assertTrue($this->reader->getBool($entity, 'missing', true));
+        $this->assertFalse($this->reader->getBool($entity, 'missing'));
     }
 
     public function testAListIsAListWhicheverFormItArrivesIn(): void
@@ -158,44 +158,44 @@ final class AttributeValueReaderTest extends TestCase
         $resolved = new DataObject(['fit' => [12, 47]]);
         $single = new DataObject(['fit' => '12']);
 
-        self::assertSame(['12', '47'], $this->reader->getList($stored, 'fit'));
-        self::assertSame(['12', '47'], $this->reader->getList($resolved, 'fit'));
-        self::assertSame(['12'], $this->reader->getList($single, 'fit'));
-        self::assertSame([], $this->reader->getList(new DataObject(), 'fit'));
+        $this->assertSame(['12', '47'], $this->reader->getList($stored, 'fit'));
+        $this->assertSame(['12', '47'], $this->reader->getList($resolved, 'fit'));
+        $this->assertSame(['12'], $this->reader->getList($single, 'fit'));
+        $this->assertSame([], $this->reader->getList(new DataObject(), 'fit'));
     }
 
     public function testListEntriesAreTrimmedAndBlanksDropped(): void
     {
         $entity = new DataObject(['fit' => ' 12 ,, 47 ,']);
 
-        self::assertSame(['12', '47'], $this->reader->getList($entity, 'fit'));
+        $this->assertSame(['12', '47'], $this->reader->getList($entity, 'fit'));
     }
 
     public function testASeparatorOfYourOwnIsHonoured(): void
     {
         $entity = new DataObject(['tags' => 'a|b|c']);
 
-        self::assertSame(['a', 'b', 'c'], $this->reader->getList($entity, 'tags', '|'));
+        $this->assertSame(['a', 'b', 'c'], $this->reader->getList($entity, 'tags', '|'));
     }
 
     public function testLabelsAreDelegatedWithTheRawValue(): void
     {
         $entity = new DataObject(['color' => '247,248']);
 
-        $this->optionLabels->expects(self::once())
+        $this->optionLabels->expects($this->once())
             ->method('resolveValue')
             ->with('color', '247,248', 3)
             ->willReturn(['Ceil Blue', 'Wine']);
 
-        self::assertSame(['Ceil Blue', 'Wine'], $this->reader->getLabels($entity, 'color', 3));
+        $this->assertSame(['Ceil Blue', 'Wine'], $this->reader->getLabels($entity, 'color', 3));
     }
 
     public function testAnEmptyAttributeCodeIsNotAskedFor(): void
     {
         $entity = new DataObject(['' => 'surprising but possible']);
 
-        self::assertFalse($this->reader->has($entity, ''));
-        self::assertSame('', $this->reader->getString($entity, ''));
-        self::assertSame([], $this->reader->getList($entity, ''));
+        $this->assertFalse($this->reader->has($entity, ''));
+        $this->assertSame('', $this->reader->getString($entity, ''));
+        $this->assertSame([], $this->reader->getList($entity, ''));
     }
 }

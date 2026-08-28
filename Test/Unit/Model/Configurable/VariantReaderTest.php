@@ -23,7 +23,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * The three queries behind a variant lookup.
  */
-final class VariantReaderTest extends TestCase
+class VariantReaderTest extends TestCase
 {
     private VariantReader $reader;
 
@@ -91,15 +91,15 @@ final class VariantReaderTest extends TestCase
 
         $children = $this->reader->fetchChildLinks(['SKU-Child']);
 
-        self::assertArrayHasKey('sku-child', $children);
-        self::assertSame(10, $children['sku-child']['link']);
-        self::assertSame([1 => 1, 2 => 2], $children['sku-child']['parents']);
+        $this->assertArrayHasKey('sku-child', $children);
+        $this->assertSame(10, $children['sku-child']['link']);
+        $this->assertSame([1 => 1, 2 => 2], $children['sku-child']['parents']);
     }
 
     public function testNoParentLinksMeansNoQueryForSuperAttributes(): void
     {
-        self::assertSame([], $this->reader->fetchSuperAttributes([]));
-        self::assertSame([], $this->tablesRead);
+        $this->assertSame([], $this->reader->fetchSuperAttributes([]));
+        $this->assertSame([], $this->tablesRead);
     }
 
     public function testSuperAttributesComeBackKeyedByParentThenAttribute(): void
@@ -109,7 +109,7 @@ final class VariantReaderTest extends TestCase
             ['parent_link' => '1', 'attribute_id' => '94', 'attribute_code' => 'size', 'backend_type' => 'int'],
         ];
 
-        self::assertSame(
+        $this->assertSame(
             [1 => [93 => 'color', 94 => 'size']],
             $this->reader->fetchSuperAttributes([1])
         );
@@ -117,8 +117,8 @@ final class VariantReaderTest extends TestCase
 
     public function testNoChildLinksMeansNoQueryForValues(): void
     {
-        self::assertSame([], $this->reader->fetchOptionValues([], [1 => [93 => 'color']]));
-        self::assertSame([], $this->tablesRead);
+        $this->assertSame([], $this->reader->fetchOptionValues([], [1 => [93 => 'color']]));
+        $this->assertSame([], $this->tablesRead);
     }
 
     /**
@@ -136,8 +136,8 @@ final class VariantReaderTest extends TestCase
             ['link_id' => '10', 'attribute_id' => '93', 'value' => '77'],
         ];
 
-        self::assertSame([10 => [93 => 77]], $this->reader->fetchOptionValues([10], $superAttributes));
-        self::assertContains('catalog_product_entity_varchar', $this->tablesRead);
+        $this->assertSame([10 => [93 => 77]], $this->reader->fetchOptionValues([10], $superAttributes));
+        $this->assertContains('catalog_product_entity_varchar', $this->tablesRead);
     }
 
     /**
@@ -157,7 +157,7 @@ final class VariantReaderTest extends TestCase
             ['link_id' => '12', 'attribute_id' => '93', 'value' => '5'],
         ];
 
-        self::assertSame([12 => [93 => 5]], $this->reader->fetchOptionValues([10, 11, 12], $superAttributes));
+        $this->assertSame([12 => [93 => 5]], $this->reader->fetchOptionValues([10, 11, 12], $superAttributes));
     }
 
     private function newSelect(): Select

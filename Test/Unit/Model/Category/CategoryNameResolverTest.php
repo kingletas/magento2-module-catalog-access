@@ -25,7 +25,7 @@ use Magento\Framework\EntityManager\MetadataPool;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-final class CategoryNameResolverTest extends TestCase
+class CategoryNameResolverTest extends TestCase
 {
     private const NAME_ATTRIBUTE_ID = 45;
 
@@ -83,7 +83,7 @@ final class CategoryNameResolverTest extends TestCase
         $this->metadataPool = $this->createMock(MetadataPool::class);
         $this->metadataPool->method('getMetadata')
             ->willReturnCallback(function (string $entity): EntityMetadataInterface {
-                self::assertSame(CategoryInterface::class, $entity);
+                $this->assertSame(CategoryInterface::class, $entity);
 
                 $metadata = $this->createMock(EntityMetadataInterface::class);
                 $metadata->method('getLinkField')->willReturn($this->linkField);
@@ -104,7 +104,7 @@ final class CategoryNameResolverTest extends TestCase
             ['entity_id' => '12', 'name' => 'Tops'],
         ];
 
-        self::assertSame([11 => 'Tops', 12 => 'Tops'], $this->resolver()->getNames([11, 12]));
+        $this->assertSame([11 => 'Tops', 12 => 'Tops'], $this->resolver()->getNames([11, 12]));
     }
 
     /**
@@ -117,7 +117,7 @@ final class CategoryNameResolverTest extends TestCase
             range(1, 50)
         );
 
-        $this->connection->expects(self::once())->method('fetchAll');
+        $this->connection->expects($this->once())->method('fetchAll');
 
         $this->resolver()->getNames(range(1, 50));
     }
@@ -132,15 +132,15 @@ final class CategoryNameResolverTest extends TestCase
 
         $joins = $this->joins[0];
 
-        self::assertArrayHasKey('default_value', $joins);
-        self::assertArrayHasKey('store_value', $joins);
-        self::assertStringContainsString('default_value.store_id = 0', $joins['default_value']['condition']);
-        self::assertStringContainsString('store_value.store_id = 3', $joins['store_value']['condition']);
-        self::assertSame(
+        $this->assertArrayHasKey('default_value', $joins);
+        $this->assertArrayHasKey('store_value', $joins);
+        $this->assertStringContainsString('default_value.store_id = 0', $joins['default_value']['condition']);
+        $this->assertStringContainsString('store_value.store_id = 3', $joins['store_value']['condition']);
+        $this->assertSame(
             'COALESCE(store_value.value, default_value.value)',
             (string) $joins['store_value']['columns']['name']
         );
-        self::assertStringContainsString(
+        $this->assertStringContainsString(
             'attribute_id = ' . self::NAME_ATTRIBUTE_ID,
             $joins['default_value']['condition']
         );
@@ -150,13 +150,13 @@ final class CategoryNameResolverTest extends TestCase
     {
         $this->rows[0] = [['entity_id' => '11', 'name' => 'Tops']];
 
-        $this->connection->expects(self::once())->method('fetchAll');
+        $this->connection->expects($this->once())->method('fetchAll');
 
         $resolver = $this->resolver();
 
-        self::assertSame('Tops', $resolver->getName(11));
-        self::assertSame('Tops', $resolver->getName(11));
-        self::assertSame([11 => 'Tops'], $resolver->getNames([11]));
+        $this->assertSame('Tops', $resolver->getName(11));
+        $this->assertSame('Tops', $resolver->getName(11));
+        $this->assertSame([11 => 'Tops'], $resolver->getNames([11]));
     }
 
     public function testEachStoreIsRememberedSeparately(): void
@@ -166,9 +166,9 @@ final class CategoryNameResolverTest extends TestCase
 
         $resolver = $this->resolver();
 
-        self::assertSame('Tops', $resolver->getName(11, 1));
-        self::assertSame('Blouses', $resolver->getName(11, 2));
-        self::assertSame('Tops', $resolver->getName(11, 1), 'Store 1 must not be answered with store 2s name.');
+        $this->assertSame('Tops', $resolver->getName(11, 1));
+        $this->assertSame('Blouses', $resolver->getName(11, 2));
+        $this->assertSame('Tops', $resolver->getName(11, 1), 'Store 1 must not be answered with store 2s name.');
     }
 
     /**
@@ -177,12 +177,12 @@ final class CategoryNameResolverTest extends TestCase
      */
     public function testAnUnknownCategoryIsAskedAboutOnceAndThenRemembered(): void
     {
-        $this->connection->expects(self::once())->method('fetchAll');
+        $this->connection->expects($this->once())->method('fetchAll');
 
         $resolver = $this->resolver();
 
-        self::assertNull($resolver->getName(999));
-        self::assertNull($resolver->getName(999));
+        $this->assertNull($resolver->getName(999));
+        $this->assertNull($resolver->getName(999));
     }
 
     public function testOnlyRealNamesComeBack(): void
@@ -193,7 +193,7 @@ final class CategoryNameResolverTest extends TestCase
             ['entity_id' => '13', 'name' => 'Tops'],
         ];
 
-        self::assertSame([13 => 'Tops'], $this->resolver()->getNames([11, 12, 13]));
+        $this->assertSame([13 => 'Tops'], $this->resolver()->getNames([11, 12, 13]));
     }
 
     public function testNamesComeBackInTheOrderTheyWereAskedFor(): void
@@ -203,19 +203,19 @@ final class CategoryNameResolverTest extends TestCase
             ['entity_id' => '11', 'name' => 'Tops'],
         ];
 
-        self::assertSame([11 => 'Tops', 12 => 'Tops'], $this->resolver()->getNames([11, 12]));
+        $this->assertSame([11 => 'Tops', 12 => 'Tops'], $this->resolver()->getNames([11, 12]));
     }
 
     public function testNothingToResolveIsNotAQuery(): void
     {
-        $this->connection->expects(self::never())->method('fetchAll');
+        $this->connection->expects($this->never())->method('fetchAll');
 
         $resolver = $this->resolver();
 
-        self::assertSame([], $resolver->getNames([]));
-        self::assertSame([], $resolver->getNames([0, -3]));
-        self::assertSame([], $resolver->getPaths([]));
-        self::assertSame('', $resolver->getPath(0));
+        $this->assertSame([], $resolver->getNames([]));
+        $this->assertSame([], $resolver->getNames([0, -3]));
+        $this->assertSame([], $resolver->getPaths([]));
+        $this->assertSame('', $resolver->getPath(0));
     }
 
     /**
@@ -234,7 +234,7 @@ final class CategoryNameResolverTest extends TestCase
             ['entity_id' => '12', 'name' => 'Scrub Tops'],
         ];
 
-        self::assertSame('Women > Scrub Tops', $this->resolver()->getPath(12));
+        $this->assertSame('Women > Scrub Tops', $this->resolver()->getPath(12));
     }
 
     public function testPathSegmentsAreTheSamePathUnjoined(): void
@@ -248,7 +248,7 @@ final class CategoryNameResolverTest extends TestCase
             ['entity_id' => '12', 'name' => 'Scrub Tops'],
         ];
 
-        self::assertSame(['Women', 'Scrub Tops'], $this->resolver()->getPathSegments(12));
+        $this->assertSame(['Women', 'Scrub Tops'], $this->resolver()->getPathSegments(12));
     }
 
     public function testASeparatorOfYourOwnIsHonoured(): void
@@ -259,7 +259,7 @@ final class CategoryNameResolverTest extends TestCase
             ['entity_id' => '12', 'name' => 'Scrub Tops'],
         ];
 
-        self::assertSame('Women/Scrub Tops', $this->resolver()->getPath(12, null, '/'));
+        $this->assertSame('Women/Scrub Tops', $this->resolver()->getPath(12, null, '/'));
     }
 
     /**
@@ -278,9 +278,9 @@ final class CategoryNameResolverTest extends TestCase
             ['entity_id' => '13', 'name' => 'Trousers'],
         ];
 
-        $this->connection->expects(self::exactly(2))->method('fetchAll');
+        $this->connection->expects($this->exactly(2))->method('fetchAll');
 
-        self::assertSame(
+        $this->assertSame(
             [12 => 'Women > Tops', 13 => 'Women > Trousers'],
             $this->resolver()->getPaths([12, 13])
         );
@@ -290,15 +290,15 @@ final class CategoryNameResolverTest extends TestCase
     {
         $this->rows[0] = [];
 
-        self::assertSame('', $this->resolver()->getPath(999));
+        $this->assertSame('', $this->resolver()->getPath(999));
     }
 
     public function testJoinsOnEntityIdWhereThereIsNoStaging(): void
     {
         $this->resolver()->getNames([11]);
 
-        self::assertStringContainsString('`entity_id`', $this->joins[0]['default_value']['condition']);
-        self::assertSame([], $this->conditionsFor(0, 'entity.created_in <= ?'));
+        $this->assertStringContainsString('`entity_id`', $this->joins[0]['default_value']['condition']);
+        $this->assertSame([], $this->conditionsFor(0, 'entity.created_in <= ?'));
     }
 
     /**
@@ -311,15 +311,15 @@ final class CategoryNameResolverTest extends TestCase
 
         $this->resolver()->getNames([11]);
 
-        self::assertStringContainsString('`row_id`', $this->joins[0]['default_value']['condition']);
+        $this->assertStringContainsString('`row_id`', $this->joins[0]['default_value']['condition']);
 
         $createdIn = $this->conditionsFor(0, 'entity.created_in <= ?');
         $updatedIn = $this->conditionsFor(0, 'entity.updated_in > ?');
 
-        self::assertCount(1, $createdIn);
-        self::assertCount(1, $updatedIn);
-        self::assertEqualsWithDelta(time(), $createdIn[0], 5.0);
-        self::assertEqualsWithDelta(time(), $updatedIn[0], 5.0);
+        $this->assertCount(1, $createdIn);
+        $this->assertCount(1, $updatedIn);
+        $this->assertEqualsWithDelta(time(), $createdIn[0], 5.0);
+        $this->assertEqualsWithDelta(time(), $updatedIn[0], 5.0);
     }
 
     /**
@@ -333,7 +333,7 @@ final class CategoryNameResolverTest extends TestCase
 
         $this->resolver()->getNames([11]);
 
-        self::assertSame([], $this->conditionsFor(0, 'entity.created_in <= ?'));
+        $this->assertSame([], $this->conditionsFor(0, 'entity.created_in <= ?'));
     }
 
     public function testAnUnusableNameAttributeIsNotQueriedAround(): void
@@ -341,7 +341,7 @@ final class CategoryNameResolverTest extends TestCase
         $eavConfig = $this->createMock(EavConfig::class);
         $eavConfig->method('getAttribute')->willReturn($this->nameAttribute(0));
 
-        $this->connection->expects(self::never())->method('fetchAll');
+        $this->connection->expects($this->never())->method('fetchAll');
 
         $resolver = new CategoryNameResolver(
             $this->resourceConnection,
@@ -351,7 +351,7 @@ final class CategoryNameResolverTest extends TestCase
             $this->memo
         );
 
-        self::assertSame([], $resolver->getNames([11]));
+        $this->assertSame([], $resolver->getNames([11]));
     }
 
     private function resolver(): CategoryNameResolver

@@ -13,17 +13,17 @@ namespace Commerce\CatalogAccess\Test\Unit\Model\Memo;
 use Commerce\CatalogAccess\Model\Memo\RequestMemo;
 use PHPUnit\Framework\TestCase;
 
-final class RequestMemoTest extends TestCase
+class RequestMemoTest extends TestCase
 {
     public function testStoresAndReturnsValues(): void
     {
         $memo = new RequestMemo();
         $memo->set('a', 'first');
 
-        self::assertTrue($memo->has('a'));
-        self::assertSame('first', $memo->get('a'));
-        self::assertFalse($memo->has('b'));
-        self::assertNull($memo->get('b'));
+        $this->assertTrue($memo->has('a'));
+        $this->assertSame('first', $memo->get('a'));
+        $this->assertFalse($memo->has('b'));
+        $this->assertNull($memo->get('b'));
     }
 
     /**
@@ -35,9 +35,9 @@ final class RequestMemoTest extends TestCase
         $memo = new RequestMemo();
         $memo->set('missing-sku', null);
 
-        self::assertTrue($memo->has('missing-sku'));
-        self::assertNull($memo->get('missing-sku'));
-        self::assertFalse($memo->has('never-asked'));
+        $this->assertTrue($memo->has('missing-sku'));
+        $this->assertNull($memo->get('missing-sku'));
+        $this->assertFalse($memo->has('never-asked'));
     }
 
     public function testNeverGrowsPastItsLimit(): void
@@ -48,9 +48,9 @@ final class RequestMemoTest extends TestCase
             $memo->set('key-' . $i, $i);
         }
 
-        self::assertSame(3, $memo->count());
-        self::assertSame(100, $memo->get('key-100'));
-        self::assertFalse($memo->has('key-1'));
+        $this->assertSame(3, $memo->count());
+        $this->assertSame(100, $memo->get('key-100'));
+        $this->assertFalse($memo->has('key-1'));
     }
 
     /**
@@ -66,12 +66,12 @@ final class RequestMemoTest extends TestCase
 
         // Reading "hot" makes it the most recent, so the next insert has to
         // take "cold" instead.
-        self::assertSame('kept', $memo->get('hot'));
+        $this->assertSame('kept', $memo->get('hot'));
 
         $memo->set('new', 2);
 
-        self::assertTrue($memo->has('hot'));
-        self::assertFalse($memo->has('cold'));
+        $this->assertTrue($memo->has('hot'));
+        $this->assertFalse($memo->has('cold'));
     }
 
     public function testAHitThroughHasCountsAsUse(): void
@@ -80,12 +80,12 @@ final class RequestMemoTest extends TestCase
         $memo->set('a', 1);
         $memo->set('b', 2);
 
-        self::assertTrue($memo->has('a'));
+        $this->assertTrue($memo->has('a'));
 
         $memo->set('c', 3);
 
-        self::assertTrue($memo->has('a'), 'has() is a read, so it must refresh recency the way get() does.');
-        self::assertFalse($memo->has('b'));
+        $this->assertTrue($memo->has('a'), 'has() is a read, so it must refresh recency the way get() does.');
+        $this->assertFalse($memo->has('b'));
     }
 
     public function testRewritingAKeyDoesNotDuplicateIt(): void
@@ -95,9 +95,9 @@ final class RequestMemoTest extends TestCase
         $memo->set('a', 2);
         $memo->set('b', 3);
 
-        self::assertSame(2, $memo->count());
-        self::assertSame(2, $memo->get('a'));
-        self::assertSame(3, $memo->get('b'));
+        $this->assertSame(2, $memo->count());
+        $this->assertSame(2, $memo->get('a'));
+        $this->assertSame(3, $memo->get('b'));
     }
 
     /**
@@ -109,8 +109,8 @@ final class RequestMemoTest extends TestCase
         $memo = new RequestMemo(0);
         $memo->set('a', 1);
 
-        self::assertSame(1, $memo->getLimit());
-        self::assertSame(1, $memo->get('a'));
+        $this->assertSame(1, $memo->getLimit());
+        $this->assertSame(1, $memo->get('a'));
     }
 
     public function testForgetRemovesOneKeyAndClearRemovesAll(): void
@@ -121,12 +121,12 @@ final class RequestMemoTest extends TestCase
 
         $memo->forget('a');
 
-        self::assertFalse($memo->has('a'));
-        self::assertTrue($memo->has('b'));
+        $this->assertFalse($memo->has('a'));
+        $this->assertTrue($memo->has('b'));
 
         $memo->clear();
 
-        self::assertSame(0, $memo->count());
+        $this->assertSame(0, $memo->count());
     }
 
     public function testForgetMatchingSeesBothKeyAndValue(): void
@@ -140,8 +140,8 @@ final class RequestMemoTest extends TestCase
             static fn (string $key, mixed $value): bool => ($value['sku'] ?? null) === 'A'
         );
 
-        self::assertFalse($memo->has('sku:A'));
-        self::assertFalse($memo->has('id:7'), 'The entry reached by id has to go with the one reached by SKU.');
-        self::assertTrue($memo->has('sku:B'));
+        $this->assertFalse($memo->has('sku:A'));
+        $this->assertFalse($memo->has('id:7'), 'The entry reached by id has to go with the one reached by SKU.');
+        $this->assertTrue($memo->has('sku:B'));
     }
 }

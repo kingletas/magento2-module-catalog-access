@@ -24,7 +24,7 @@ use Magento\Framework\EntityManager\MetadataPool;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-final class ConfigurableVariantsTest extends TestCase
+class ConfigurableVariantsTest extends TestCase
 {
     private AdapterInterface&MockObject $connection;
     private AttributeOptionLabelResolverInterface&MockObject $optionLabels;
@@ -92,7 +92,7 @@ final class ConfigurableVariantsTest extends TestCase
             ['parent_sku' => 'TROUSER', 'child_sku' => 'TROUSER-32'],
         ];
 
-        self::assertSame(
+        $this->assertSame(
             ['SHIRT' => ['SHIRT-S', 'SHIRT-M'], 'TROUSER' => ['TROUSER-32']],
             $this->variants()->getChildSkus(['SHIRT', 'TROUSER'])
         );
@@ -100,7 +100,7 @@ final class ConfigurableVariantsTest extends TestCase
 
     public function testChildrenOfManyParentsAreOneQuery(): void
     {
-        $this->connection->expects(self::once())->method('fetchAll');
+        $this->connection->expects($this->once())->method('fetchAll');
 
         $this->variants()->getChildSkus(array_map(static fn (int $i): string => 'P-' . $i, range(1, 50)));
     }
@@ -109,7 +109,7 @@ final class ConfigurableVariantsTest extends TestCase
     {
         $this->rows[0] = [['parent_sku' => 'SHIRT', 'child_sku' => 'SHIRT-S']];
 
-        self::assertSame(
+        $this->assertSame(
             ['SHIRT'],
             array_keys($this->variants()->getChildSkus(['SHIRT', 'SIMPLE']))
         );
@@ -127,8 +127,8 @@ final class ConfigurableVariantsTest extends TestCase
 
         $joins = $this->joins[0];
 
-        self::assertSame('parent.`row_id` = link.parent_id', $joins['parent']);
-        self::assertSame('child.entity_id = link.product_id', $joins['child']);
+        $this->assertSame('parent.`row_id` = link.parent_id', $joins['parent']);
+        $this->assertSame('child.entity_id = link.product_id', $joins['child']);
     }
 
     public function testAStagedCatalogueReadsTheVersionThatIsLiveNow(): void
@@ -140,9 +140,9 @@ final class ConfigurableVariantsTest extends TestCase
 
         $conditions = array_column($this->conditions[0], 0);
 
-        self::assertContains('parent.created_in <= ?', $conditions);
-        self::assertContains('parent.updated_in > ?', $conditions);
-        self::assertContains('child.created_in <= ?', $conditions);
+        $this->assertContains('parent.created_in <= ?', $conditions);
+        $this->assertContains('parent.updated_in > ?', $conditions);
+        $this->assertContains('child.created_in <= ?', $conditions);
     }
 
     /**
@@ -156,14 +156,14 @@ final class ConfigurableVariantsTest extends TestCase
             ['parent_sku' => 'SHIRT', 'child_sku' => 'SHIRT-S'],
         ];
 
-        self::assertSame(['SHIRT' => ['SHIRT-S']], $this->variants()->getChildSkus(['SHIRT']));
+        $this->assertSame(['SHIRT' => ['SHIRT-S']], $this->variants()->getChildSkus(['SHIRT']));
     }
 
     public function testResolvesEachChildsOptionIdsPerAxis(): void
     {
         $this->givenACatalogue();
 
-        self::assertSame(
+        $this->assertSame(
             [
                 'SHIRT-CEIL-S' => ['color' => 247, 'size' => 10],
                 'SHIRT-WINE-M' => ['color' => 248, 'size' => 11],
@@ -180,7 +180,7 @@ final class ConfigurableVariantsTest extends TestCase
     {
         $this->givenACatalogue();
 
-        $this->connection->expects(self::exactly(3))->method('fetchAll');
+        $this->connection->expects($this->exactly(3))->method('fetchAll');
 
         $this->variants()->getVariantOptionIds(['SHIRT-CEIL-S', 'SHIRT-WINE-M']);
     }
@@ -191,7 +191,7 @@ final class ConfigurableVariantsTest extends TestCase
 
         $ids = $this->variants()->getVariantOptionIds(['SHIRT-CEIL-S']);
 
-        self::assertSame(['color', 'size'], array_keys($ids['SHIRT-CEIL-S']));
+        $this->assertSame(['color', 'size'], array_keys($ids['SHIRT-CEIL-S']));
     }
 
     public function testAStandaloneProductIsAbsentRatherThanEmpty(): void
@@ -200,14 +200,14 @@ final class ConfigurableVariantsTest extends TestCase
 
         $ids = $this->variants()->getVariantOptionIds(['SHIRT-CEIL-S', 'SIMPLE-1']);
 
-        self::assertArrayNotHasKey('SIMPLE-1', $ids);
+        $this->assertArrayNotHasKey('SIMPLE-1', $ids);
     }
 
     public function testTheSameChildIsAskedAboutOnce(): void
     {
         $this->givenACatalogue();
 
-        $this->connection->expects(self::exactly(3))->method('fetchAll');
+        $this->connection->expects($this->exactly(3))->method('fetchAll');
 
         $variants = $this->variants();
         $variants->getVariantOptionIds(['SHIRT-CEIL-S']);
@@ -220,7 +220,7 @@ final class ConfigurableVariantsTest extends TestCase
 
         $this->variants()->getVariantOptionIds(['SHIRT-CEIL-S']);
 
-        self::assertSame('catalog_product_entity_varchar', $this->tables[2]);
+        $this->assertSame('catalog_product_entity_varchar', $this->tables[2]);
     }
 
     /**
@@ -233,7 +233,7 @@ final class ConfigurableVariantsTest extends TestCase
 
         $this->variants()->getVariantOptionIds(['SHIRT-CEIL-S']);
 
-        self::assertContains(['value.store_id = ?', 0], $this->conditions[2]);
+        $this->assertContains(['value.store_id = ?', 0], $this->conditions[2]);
     }
 
     /**
@@ -257,15 +257,15 @@ final class ConfigurableVariantsTest extends TestCase
 
         $labels = $this->variants()->getVariantLabels(['SHIRT-CEIL-S', 'SHIRT-WINE-M'], 3);
 
-        self::assertSame(
+        $this->assertSame(
             [
                 'SHIRT-CEIL-S' => ['color' => 'Ceil Blue', 'size' => 'Small'],
                 'SHIRT-WINE-M' => ['color' => 'Wine', 'size' => 'Medium'],
             ],
             $labels
         );
-        self::assertCount(2, $calls, 'Two axes, two lookups — not one per child per axis.');
-        self::assertSame(['color', [247, 248], 3], $calls[0]);
+        $this->assertCount(2, $calls, 'Two axes, two lookups — not one per child per axis.');
+        $this->assertSame(['color', [247, 248], 3], $calls[0]);
     }
 
     /**
@@ -281,7 +281,7 @@ final class ConfigurableVariantsTest extends TestCase
                 static fn (string $code): array => $code === 'color' ? [247 => 'Ceil Blue'] : []
             );
 
-        self::assertSame(
+        $this->assertSame(
             ['SHIRT-CEIL-S' => ['color' => 'Ceil Blue']],
             $this->variants()->getVariantLabels(['SHIRT-CEIL-S'])
         );
@@ -289,14 +289,14 @@ final class ConfigurableVariantsTest extends TestCase
 
     public function testNothingToResolveIsNotAQuery(): void
     {
-        $this->connection->expects(self::never())->method('fetchAll');
+        $this->connection->expects($this->never())->method('fetchAll');
 
         $variants = $this->variants();
 
-        self::assertSame([], $variants->getChildSkus([]));
-        self::assertSame([], $variants->getChildSkus(['', '   ']));
-        self::assertSame([], $variants->getVariantOptionIds([]));
-        self::assertSame([], $variants->getVariantLabels([]));
+        $this->assertSame([], $variants->getChildSkus([]));
+        $this->assertSame([], $variants->getChildSkus(['', '   ']));
+        $this->assertSame([], $variants->getVariantOptionIds([]));
+        $this->assertSame([], $variants->getVariantLabels([]));
     }
 
     public function testSkusAreMatchedCaseInsensitivelyAndReturnedAsAsked(): void
@@ -305,7 +305,7 @@ final class ConfigurableVariantsTest extends TestCase
 
         $ids = $this->variants()->getVariantOptionIds(['shirt-ceil-s']);
 
-        self::assertArrayHasKey('shirt-ceil-s', $ids);
+        $this->assertArrayHasKey('shirt-ceil-s', $ids);
     }
 
     /**
@@ -340,7 +340,7 @@ final class ConfigurableVariantsTest extends TestCase
         $metadataPool = $this->createMock(MetadataPool::class);
         $metadataPool->method('getMetadata')
             ->willReturnCallback(function (string $entity) use ($metadata): EntityMetadataInterface {
-                self::assertSame(ProductInterface::class, $entity);
+                $this->assertSame(ProductInterface::class, $entity);
 
                 return $metadata;
             });
