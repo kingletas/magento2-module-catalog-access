@@ -1,10 +1,10 @@
 <?php
 /**
- * Standalone unit-test bootstrap.
- *
+ * @package   Commerce_CatalogAccess
  * @copyright Copyright (c) the Commerce modules authors
  * @license   OSL-3.0 https://opensource.org/licenses/OSL-3.0
  */
+
 declare(strict_types=1);
 
 $vendorDir = getenv('M2_VENDOR') ?: '';
