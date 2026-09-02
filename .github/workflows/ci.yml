@@ -80,7 +80,7 @@ jobs:
         run: vendor/bin/phpcs --standard=phpcs.xml.dist --report=full
 
   unit:
-    name: Unit tests
+    name: Test suites
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -114,7 +114,7 @@ jobs:
       - name: PHPUnit
         env:
           M2_VENDOR: ${{ github.workspace }}/vendor
-        run: vendor/bin/phpunit --configuration phpunit.xml.dist --testsuite unit
+        run: vendor/bin/phpunit --configuration phpunit.xml.dist
 
   static-analysis:
     name: Static analysis
