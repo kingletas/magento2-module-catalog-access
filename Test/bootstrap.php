@@ -81,3 +81,6 @@ if (!function_exists('__')) {
 if (!defined('BP')) {
     define('BP', dirname($vendorDir));
 }
+
+// Factory and Proxy classes Magento would have generated at build time.
+require_once __DIR__ . '/generated-classes.php';

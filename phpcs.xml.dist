@@ -20,6 +20,10 @@
     <file>Test</file>
     <file>registration.php</file>
 
+    <!-- Neither is ours to lint: composer writes one, the code generator the other. -->
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>var/*</exclude-pattern>
+
     <arg name="extensions" value="php"/>
     <arg name="colors"/>
     <arg value="sp"/>
@@ -60,6 +64,7 @@
     -->
     <rule ref="Magento2.Security.LanguageConstruct">
         <exclude-pattern>Test/bootstrap.php</exclude-pattern>
+        <exclude-pattern>Test/generated-classes.php</exclude-pattern>
         <exclude-pattern>Test/integration-bootstrap.php</exclude-pattern>
     </rule>
 

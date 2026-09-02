@@ -103,6 +103,7 @@ class ProductBatchLoader implements ProductBatchLoaderInterface
 
             $products = [];
 
+            /** @var ProductInterface $product */
             foreach ($collection->getItems() as $product) {
                 $key = $requested[mb_strtolower((string) $product->getSku())] ?? null;
 
@@ -152,6 +153,7 @@ class ProductBatchLoader implements ProductBatchLoaderInterface
             $collection = $this->newCollection($storeId, $attributes);
             $collection->addIdFilter($chunk);
 
+            /** @var ProductInterface $product */
             foreach ($collection->getItems() as $product) {
                 $found[(int) $product->getId()] = $product;
             }

@@ -189,16 +189,14 @@ Exceptions propagate — the environment is restored first.
 
 ## Tests
 
-153 unit tests, no database required:
-
 ```bash
-M2_VENDOR=/path/to/magento/vendor php ../dev/run-tests.php -c ../dev/phpunit.xml
+make check
 ```
 
-or, for this module alone:
+The coding standard and all four suites — 194 tests, no database and no Magento bootstrap. Narrow it to one suite with `SUITE`:
 
 ```bash
-M2_VENDOR=/path/to/magento/vendor vendor/bin/phpunit
+make test SUITE=behaviour
 ```
 
 Every query is asserted against the `Select` it was built on — the store fallback, the version window, the link field on each side of a join, the chunking, the default-scope read — so the SQL is covered without an installation to run it against.

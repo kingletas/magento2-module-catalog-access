@@ -15,6 +15,18 @@ M2_VENDOR ?= $(HOME)/Development/magento/commerce-vanilla/vendor
 PHP       ?= php
 COMPOSER  ?= composer
 
+# Which suite `make test` runs: all, unit, wiring, performance or behaviour.
+SUITE ?= all
+
+SUITE_all         := Test/Unit Test/Wiring Test/Performance Test/Behaviour
+SUITE_unit        := Test/Unit
+SUITE_wiring      := Test/Wiring
+SUITE_performance := Test/Performance
+SUITE_behaviour   := Test/Behaviour
+
+SUITE_DIRS  := $(SUITE_$(SUITE))
+SUITE_LABEL := $(if $(filter all,$(SUITE)),every suite,the $(SUITE) suite)
+
 HARNESS := $(wildcard $(CURDIR)/../dev/run-tests.php)
 PHPCS   := $(wildcard $(CURDIR)/../dev/run-phpcs.php)
 
@@ -38,11 +50,20 @@ install: ## Install this package's dev dependencies (needs repo.magento.com cred
 # --- checks -----------------------------------------------------------------
 
 .PHONY: test
-test: ## The unit suite
-ifneq ($(HARNESS),)
-	@M2_VENDOR="$(M2_VENDOR)" $(PHP) "$(HARNESS)" --configuration ../dev/phpunit.xml Test/Unit
-else
+test: ## Run the suites; narrow with SUITE=unit|wiring|performance|behaviour
+ifeq ($(SUITE_DIRS),)
+	@echo "  unknown SUITE '$(SUITE)'. One of: all unit wiring performance behaviour"
+	@echo
+	@echo "      make test"
+	@echo "      make test SUITE=behaviour"
+	@echo
+	@exit 2
+else ifneq ($(HARNESS),)
+	@M2_VENDOR="$(M2_VENDOR)" $(PHP) "$(HARNESS)" --configuration ../dev/phpunit.xml $(SUITE_DIRS)
+else ifeq ($(SUITE),all)
 	@$(COMPOSER) run-script test
+else
+	@$(COMPOSER) run-script test-$(SUITE)
 endif
 
 .PHONY: cs
@@ -72,4 +93,4 @@ lint: ## Syntax check every PHP file
 .PHONY: check
 check: cs test ## Everything a commit has to pass
 	@echo
-	@echo "  the standard and the unit suite pass for catalog-access"
+	@echo "  the standard and $(SUITE_LABEL) pass for catalog-access"
