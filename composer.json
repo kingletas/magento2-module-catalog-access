@@ -48,7 +48,9 @@
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "magento/magento-composer-installer": true
+            "laminas/laminas-dependency-plugin": true,
+            "magento/*": true,
+            "php-http/discovery": true
         },
         "sort-packages": true
     },
