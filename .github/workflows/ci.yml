@@ -48,10 +48,17 @@ jobs:
             | xargs -0 -n1 -P4 php -l > /dev/null
 
       - name: XML is well formed
+        # Through PHP's DOM rather than xmllint, which ubuntu-latest does not carry.
         run: |
           set -euo pipefail
-          find . -path ./vendor -prune -o \( -name '*.xml' -o -name '*.xml.dist' \) -print0 \
-            | xargs -0 -n1 xmllint --noout
+          find . -path ./vendor -prune -o -path ./var -prune -o \
+            \( -name '*.xml' -o -name '*.xml.dist' \) -print0 \
+            | xargs -0 -r -n1 php -r '$d = new DOMDocument(); libxml_use_internal_errors(true);
+              if (!$d->load($argv[1])) {
+                  fwrite(STDERR, $argv[1] . PHP_EOL);
+                  foreach (libxml_get_errors() as $e) { fwrite(STDERR, "  " . trim($e->message) . PHP_EOL); }
+                  exit(1);
+              }' --
 
 
   coding-standard:
@@ -74,7 +81,8 @@ jobs:
           composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
           composer require --dev --no-interaction --no-progress \
             magento/magento-coding-standard:'>=38 <42' \
-            phpcompatibility/php-compatibility:^9.3
+            phpcompatibility/php-compatibility:^9.3 \
+            slevomat/coding-standard:^8.15
 
       - name: phpcs
         run: vendor/bin/phpcs --standard=phpcs.xml.dist --report=full
