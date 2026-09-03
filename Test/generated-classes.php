@@ -71,5 +71,10 @@ $codeGenerator->setObjectManager(
 
 // Runs last, so it only sees a class the composer autoloader could not find.
 spl_autoload_register(static function (string $class) use ($codeGenerator): void {
-    $codeGenerator->generateClass($class);
+    try {
+        $codeGenerator->generateClass($class);
+    } catch (\Throwable) {
+        // An autoloader may not throw: a name this generator cannot build is
+        // one for some other autoloader, or genuinely absent.
+    }
 });
