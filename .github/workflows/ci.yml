@@ -157,4 +157,4 @@ jobs:
         run: vendor/bin/phpstan analyse --configuration phpstan.neon.dist --no-progress
 
       - name: PHPMD
-        run: vendor/bin/phpmd Api,Model text phpmd.xml.dist
+        run: composer run-script md
