@@ -7,3 +7,8 @@ composer.lock
 .idea/
 .vscode/
 .DS_Store
+
+# The user-level ~/.gitignore is core.excludesFile for every repository under
+# $HOME and excludes *.sh outright. Without this negation the release workflow
+# fails on a script that was never pushed.
+!*.sh
