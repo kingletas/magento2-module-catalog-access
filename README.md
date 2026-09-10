@@ -190,6 +190,7 @@ Exceptions propagate — the environment is restored first.
 ## Tests
 
 ```bash
+make install    # needs repo.magento.com credentials, for magento/framework
 make check
 ```
 

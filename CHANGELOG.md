@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+Tooling only. `make test` and `make cs` read Magento and the tools from this
+package's own `vendor/`, which `make install` fills, and stop with instructions
+when it is missing rather than running whatever `phpcs` or `phpunit` is on the
+PATH. Nothing about how the module behaves changed.
+
 ## 1.0.3
 
 Tooling only. Every workflow action is pinned to a commit rather than a tag, and
