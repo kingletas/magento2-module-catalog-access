@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+Tooling only. Release notes join each changelog paragraph onto one line,
+because a release page turns every newline into a line break. Nothing about
+how the module behaves changed.
+
 ## 2.0.0
 
 The vendor is now Kingletas: the package is `kingletas/module-catalog-access`, the namespace

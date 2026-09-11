@@ -40,4 +40,20 @@ if [ -z "$notes" ]; then
   exit 1
 fi
 
-printf '%s\n' "$notes"
+# The changelog wraps its lines, and a release page renders every newline as a
+# break, so each paragraph and list item is joined back onto one line. Headings,
+# table rows and fenced code are left exactly as written.
+printf '%s\n' "$notes" | awk '
+  function flush() { if (buf != "") print buf; buf = "" }
+  /^[[:space:]]*```/ { flush(); fenced = !fenced; print; next }
+  fenced { print; next }
+  /^[[:space:]]*$/ { flush(); print; next }
+  /^[[:space:]]*\|/ || /^#+ / { flush(); print; next }
+  /^[[:space:]]*([-*+>] |[0-9]+\. )/ { flush(); buf = $0; next }
+  {
+    line = $0
+    sub(/^[[:space:]]+/, "", line)
+    buf = (buf == "") ? $0 : buf " " line
+  }
+  END { flush() }
+'
