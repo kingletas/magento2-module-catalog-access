@@ -1,17 +1,17 @@
 <?php
 /**
- * @package   Commerce_CatalogAccess
- * @copyright Copyright (c) the Commerce modules authors
+ * @package   Kingletas_CatalogAccess
+ * @copyright Copyright (c) the Kingletas modules authors
  * @license   OSL-3.0 https://opensource.org/licenses/OSL-3.0
  */
 
 declare(strict_types=1);
 
-namespace Commerce\CatalogAccess\Test\Unit\Model\Category;
+namespace Kingletas\CatalogAccess\Test\Unit\Model\Category;
 
-use Commerce\CatalogAccess\Api\StoreScopeInterface;
-use Commerce\CatalogAccess\Model\Category\ProductCategoryIds;
-use Commerce\CatalogAccess\Model\Memo\RequestMemo;
+use Kingletas\CatalogAccess\Api\StoreScopeInterface;
+use Kingletas\CatalogAccess\Model\Category\ProductCategoryIds;
+use Kingletas\CatalogAccess\Model\Memo\RequestMemo;
 use Magento\Catalog\Model\Indexer\Category\Product\TableMaintainer;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Adapter\AdapterInterface;

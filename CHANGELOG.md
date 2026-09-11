@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+The vendor is now Kingletas: the package is `kingletas/module-catalog-access`, the namespace
+`Kingletas\CatalogAccess` and the module `Kingletas_CatalogAccess`, and every config
+section, table, console command and queue name starts with `kingletas`
+instead of `commerce`. Nothing about how the module behaves changed; an
+existing install moves its `commerce_` config rows and tables to `kingletas_`.
+
 Tooling only. `make test` and `make cs` read Magento and the tools from this
 package's own `vendor/`, which `make install` fills, and stop with instructions
 when it is missing rather than running whatever `phpcs` or `phpunit` is on the

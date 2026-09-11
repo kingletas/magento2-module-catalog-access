@@ -1,15 +1,15 @@
 <?php
 /**
- * @package   Commerce_CatalogAccess
- * @copyright Copyright (c) the Commerce modules authors
+ * @package   Kingletas_CatalogAccess
+ * @copyright Copyright (c) the Kingletas modules authors
  * @license   OSL-3.0 https://opensource.org/licenses/OSL-3.0
  */
 
 declare(strict_types=1);
 
-namespace Commerce\CatalogAccess\Model\Store;
+namespace Kingletas\CatalogAccess\Model\Store;
 
-use Commerce\CatalogAccess\Api\StoreScopeInterface;
+use Kingletas\CatalogAccess\Api\StoreScopeInterface;
 use Magento\Framework\App\Area;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\DesignInterface;

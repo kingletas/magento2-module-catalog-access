@@ -1,18 +1,18 @@
 <?php
 /**
- * @package   Commerce_CatalogAccess
- * @copyright Copyright (c) the Commerce modules authors
+ * @package   Kingletas_CatalogAccess
+ * @copyright Copyright (c) the Kingletas modules authors
  * @license   OSL-3.0 https://opensource.org/licenses/OSL-3.0
  */
 
 declare(strict_types=1);
 
-namespace Commerce\CatalogAccess\Test\Unit\Model\Attribute;
+namespace Kingletas\CatalogAccess\Test\Unit\Model\Attribute;
 
-use Commerce\CatalogAccess\Api\StoreScopeInterface;
-use Commerce\CatalogAccess\Model\Attribute\AttributeOptionLabelResolver;
-use Commerce\CatalogAccess\Model\Attribute\OptionLabelReader;
-use Commerce\CatalogAccess\Model\Memo\RequestMemo;
+use Kingletas\CatalogAccess\Api\StoreScopeInterface;
+use Kingletas\CatalogAccess\Model\Attribute\AttributeOptionLabelResolver;
+use Kingletas\CatalogAccess\Model\Attribute\OptionLabelReader;
+use Kingletas\CatalogAccess\Model\Memo\RequestMemo;
 use Magento\Eav\Model\Config as EavConfig;
 use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Magento\Eav\Model\Entity\Attribute\Source\Boolean as BooleanSource;

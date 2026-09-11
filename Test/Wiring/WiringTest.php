@@ -1,15 +1,15 @@
 <?php
 /**
- * @package   Commerce_CatalogAccess
- * @copyright Copyright (c) the Commerce modules authors
+ * @package   Kingletas_CatalogAccess
+ * @copyright Copyright (c) the Kingletas modules authors
  * @license   OSL-3.0 https://opensource.org/licenses/OSL-3.0
  */
 
 declare(strict_types=1);
 
-namespace Commerce\CatalogAccess\Test\Wiring;
+namespace Kingletas\CatalogAccess\Test\Wiring;
 
-use Commerce\Foundation\Test\Support\ModuleWiringTestCase;
+use Kingletas\Foundation\Test\Support\ModuleWiringTestCase;
 
 /**
  * This module's `etc/` against the code it names.

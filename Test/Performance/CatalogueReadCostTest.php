@@ -1,20 +1,20 @@
 <?php
 /**
- * @package   Commerce_CatalogAccess
- * @copyright Copyright (c) the Commerce modules authors
+ * @package   Kingletas_CatalogAccess
+ * @copyright Copyright (c) the Kingletas modules authors
  * @license   OSL-3.0 https://opensource.org/licenses/OSL-3.0
  */
 
 declare(strict_types=1);
 
-namespace Commerce\CatalogAccess\Test\Performance;
+namespace Kingletas\CatalogAccess\Test\Performance;
 
-use Commerce\CatalogAccess\Api\StoreScopeInterface;
-use Commerce\CatalogAccess\Model\Memo\RequestMemo;
-use Commerce\CatalogAccess\Model\Product\ProductBatchLoader;
-use Commerce\CatalogAccess\Model\Product\ProductLocator;
-use Commerce\Foundation\Api\ConfigurableParentSkuResolverInterface;
-use Commerce\Foundation\Test\Support\BudgetAssertions;
+use Kingletas\CatalogAccess\Api\StoreScopeInterface;
+use Kingletas\CatalogAccess\Model\Memo\RequestMemo;
+use Kingletas\CatalogAccess\Model\Product\ProductBatchLoader;
+use Kingletas\CatalogAccess\Model\Product\ProductLocator;
+use Kingletas\Foundation\Api\ConfigurableParentSkuResolverInterface;
+use Kingletas\Foundation\Test\Support\BudgetAssertions;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\ResourceModel\Product\Collection;

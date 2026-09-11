@@ -1,15 +1,15 @@
 <?php
 /**
- * @package   Commerce_CatalogAccess
- * @copyright Copyright (c) the Commerce modules authors
+ * @package   Kingletas_CatalogAccess
+ * @copyright Copyright (c) the Kingletas modules authors
  * @license   OSL-3.0 https://opensource.org/licenses/OSL-3.0
  */
 
 declare(strict_types=1);
 
-namespace Commerce\CatalogAccess\Test\Unit\Model\Memo;
+namespace Kingletas\CatalogAccess\Test\Unit\Model\Memo;
 
-use Commerce\CatalogAccess\Model\Memo\RequestMemo;
+use Kingletas\CatalogAccess\Model\Memo\RequestMemo;
 use PHPUnit\Framework\TestCase;
 
 class RequestMemoTest extends TestCase

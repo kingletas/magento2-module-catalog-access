@@ -1,21 +1,21 @@
 <?php
 /**
- * @package   Commerce_CatalogAccess
- * @copyright Copyright (c) the Commerce modules authors
+ * @package   Kingletas_CatalogAccess
+ * @copyright Copyright (c) the Kingletas modules authors
  * @license   OSL-3.0 https://opensource.org/licenses/OSL-3.0
  */
 
 declare(strict_types=1);
 
-namespace Commerce\CatalogAccess\Model\Db;
+namespace Kingletas\CatalogAccess\Model\Db;
 
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Select;
 use Magento\Framework\EntityManager\MetadataPool;
 
 /**
- * The two things every hand-written catalogue query has to get right on Adobe
- * Commerce, in one place.
+ * The two things every hand-written catalogue query has to get right on
+ * Adobe Commerce, in one place.
  */
 class StagedEntityFilter
 {

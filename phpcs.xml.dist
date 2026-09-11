@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Commerce_CatalogAccess">
+<ruleset name="Kingletas_CatalogAccess">
     <description>
         Magento's own coding standard, plus a hard floor on the PHP version the
         manifest claims to support.

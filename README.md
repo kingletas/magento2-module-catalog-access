@@ -1,4 +1,4 @@
-# Commerce_CatalogAccess
+# Kingletas_CatalogAccess
 
 The handful of catalogue reads that every module ends up writing — load a product, turn category ids into names, find out which colour a variant is, do all of it in the right store — written once, with the mistakes they invite designed out.
 
@@ -156,7 +156,7 @@ For another entity's attributes, give the resolver a different entity type — i
 
 ```xml
 <virtualType name="Acme\Feed\Model\CategoryOptionLabels"
-             type="Commerce\CatalogAccess\Model\Attribute\AttributeOptionLabelResolver">
+             type="Kingletas\CatalogAccess\Model\Attribute\AttributeOptionLabelResolver">
     <arguments>
         <argument name="entityTypeCode" xsi:type="string">catalog_category</argument>
     </arguments>

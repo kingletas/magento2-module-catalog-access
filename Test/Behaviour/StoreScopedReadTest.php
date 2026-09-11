@@ -1,17 +1,17 @@
 <?php
 /**
- * @package   Commerce_CatalogAccess
- * @copyright Copyright (c) the Commerce modules authors
+ * @package   Kingletas_CatalogAccess
+ * @copyright Copyright (c) the Kingletas modules authors
  * @license   OSL-3.0 https://opensource.org/licenses/OSL-3.0
  */
 
 declare(strict_types=1);
 
-namespace Commerce\CatalogAccess\Test\Behaviour;
+namespace Kingletas\CatalogAccess\Test\Behaviour;
 
-use Commerce\CatalogAccess\Model\Memo\RequestMemo;
-use Commerce\CatalogAccess\Model\Product\ProductLocator;
-use Commerce\CatalogAccess\Model\Store\StoreScope;
+use Kingletas\CatalogAccess\Model\Memo\RequestMemo;
+use Kingletas\CatalogAccess\Model\Product\ProductLocator;
+use Kingletas\CatalogAccess\Model\Store\StoreScope;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\App\Area;

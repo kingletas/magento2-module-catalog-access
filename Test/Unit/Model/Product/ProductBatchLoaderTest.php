@@ -1,17 +1,17 @@
 <?php
 /**
- * @package   Commerce_CatalogAccess
- * @copyright Copyright (c) the Commerce modules authors
+ * @package   Kingletas_CatalogAccess
+ * @copyright Copyright (c) the Kingletas modules authors
  * @license   OSL-3.0 https://opensource.org/licenses/OSL-3.0
  */
 
 declare(strict_types=1);
 
-namespace Commerce\CatalogAccess\Test\Unit\Model\Product;
+namespace Kingletas\CatalogAccess\Test\Unit\Model\Product;
 
-use Commerce\CatalogAccess\Api\StoreScopeInterface;
-use Commerce\CatalogAccess\Model\Product\ProductBatchLoader;
-use Commerce\Foundation\Api\ConfigurableParentSkuResolverInterface;
+use Kingletas\CatalogAccess\Api\StoreScopeInterface;
+use Kingletas\CatalogAccess\Model\Product\ProductBatchLoader;
+use Kingletas\Foundation\Api\ConfigurableParentSkuResolverInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ResourceModel\Product\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;

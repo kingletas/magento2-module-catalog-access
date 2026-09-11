@@ -1,18 +1,18 @@
 <?php
 /**
- * @package   Commerce_CatalogAccess
- * @copyright Copyright (c) the Commerce modules authors
+ * @package   Kingletas_CatalogAccess
+ * @copyright Copyright (c) the Kingletas modules authors
  * @license   OSL-3.0 https://opensource.org/licenses/OSL-3.0
  */
 
 declare(strict_types=1);
 
-namespace Commerce\CatalogAccess\Model\Category;
+namespace Kingletas\CatalogAccess\Model\Category;
 
-use Commerce\CatalogAccess\Api\CategoryNameResolverInterface;
-use Commerce\CatalogAccess\Api\StoreScopeInterface;
-use Commerce\CatalogAccess\Model\Db\StagedEntityFilter;
-use Commerce\CatalogAccess\Model\Memo\RequestMemo;
+use Kingletas\CatalogAccess\Api\CategoryNameResolverInterface;
+use Kingletas\CatalogAccess\Api\StoreScopeInterface;
+use Kingletas\CatalogAccess\Model\Db\StagedEntityFilter;
+use Kingletas\CatalogAccess\Model\Memo\RequestMemo;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Catalog\Model\Category;
 use Magento\Eav\Model\Config as EavConfig;

@@ -81,7 +81,7 @@ jobs:
         # magento/magento-coding-standard is on Packagist, so this job needs no
         # Magento credentials and always gates.
         run: |
-          composer init --quiet --name=commerce/cs-runner --no-interaction
+          composer init --quiet --name=kingletas/cs-runner --no-interaction
           composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
           composer require --dev --no-interaction --no-progress \
             magento/magento-coding-standard:'>=38 <42' \

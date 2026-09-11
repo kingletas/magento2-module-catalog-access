@@ -1,18 +1,18 @@
 <?php
 /**
- * @package   Commerce_CatalogAccess
- * @copyright Copyright (c) the Commerce modules authors
+ * @package   Kingletas_CatalogAccess
+ * @copyright Copyright (c) the Kingletas modules authors
  * @license   OSL-3.0 https://opensource.org/licenses/OSL-3.0
  */
 
 declare(strict_types=1);
 
-namespace Commerce\CatalogAccess\Model\Configurable;
+namespace Kingletas\CatalogAccess\Model\Configurable;
 
-use Commerce\CatalogAccess\Api\AttributeOptionLabelResolverInterface;
-use Commerce\CatalogAccess\Api\ConfigurableVariantsInterface;
-use Commerce\CatalogAccess\Model\Db\StagedEntityFilter;
-use Commerce\CatalogAccess\Model\Memo\RequestMemo;
+use Kingletas\CatalogAccess\Api\AttributeOptionLabelResolverInterface;
+use Kingletas\CatalogAccess\Api\ConfigurableVariantsInterface;
+use Kingletas\CatalogAccess\Model\Db\StagedEntityFilter;
+use Kingletas\CatalogAccess\Model\Memo\RequestMemo;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\App\ResourceConnection;
 

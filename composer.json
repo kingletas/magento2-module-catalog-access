@@ -1,5 +1,5 @@
 {
-    "name": "commerce/module-catalog-access",
+    "name": "kingletas/module-catalog-access",
     "description": "The safe way to read the catalogue: products by SKU or id, category names and paths, attribute option labels, and the store scope those reads happen in. Batched, store-keyed and bounded, so the mistakes these patterns invite cannot be made.",
     "type": "magento2-module",
     "license": "OSL-3.0",
@@ -19,7 +19,7 @@
     ],
     "require": {
         "php": ">=8.4",
-        "commerce/module-foundation": "^1.0",
+        "kingletas/module-foundation": "^1.0",
         "magento/framework": ">=103.0",
         "magento/module-catalog": ">=104.0",
         "magento/module-configurable-product": ">=100.4",
@@ -39,7 +39,7 @@
             "registration.php"
         ],
         "psr-4": {
-            "Commerce\\CatalogAccess\\": ""
+            "Kingletas\\CatalogAccess\\": ""
         },
         "exclude-from-classmap": [
             "/Test/"

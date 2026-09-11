@@ -27,7 +27,7 @@ Say what problem that solves, in the reader's own terms, before any mechanics.
 ## Step 1: install it
 
 ```bash
-composer require commerce/module-catalog-access
+composer require kingletas/module-catalog-access
 ```
 
 ## Step 2: point it at something
