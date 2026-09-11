@@ -19,7 +19,7 @@
     ],
     "require": {
         "php": ">=8.4",
-        "kingletas/module-foundation": "^1.0",
+        "kingletas/module-foundation": "^2.0",
         "magento/framework": ">=103.0",
         "magento/module-catalog": ">=104.0",
         "magento/module-configurable-product": ">=100.4",
