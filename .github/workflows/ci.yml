@@ -88,6 +88,11 @@ jobs:
             phpcompatibility/php-compatibility:^9.3 \
             slevomat/coding-standard:^8.15
 
+      # What this job resolved, for the step summary. Never a reason for a red run.
+      - name: What this run resolved
+        if: always()
+        uses: ./.github/actions/resolved
+
       - name: phpcs
         run: vendor/bin/phpcs --standard=phpcs.xml.dist --report=full
 
@@ -123,6 +128,11 @@ jobs:
           COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
         run: composer install --no-interaction --no-progress --prefer-dist
 
+      # What this job resolved, for the step summary. Never a reason for a red run.
+      - name: What this run resolved
+        if: always()
+        uses: ./.github/actions/resolved
+
       - name: PHPUnit
         env:
           M2_VENDOR: ${{ github.workspace }}/vendor
@@ -156,6 +166,11 @@ jobs:
           composer install --no-interaction --no-progress --prefer-dist
           composer require --dev --no-interaction --no-progress \
             phpstan/phpstan:^2.0 phpmd/phpmd:^2.15
+
+      # What this job resolved, for the step summary. Never a reason for a red run.
+      - name: What this run resolved
+        if: always()
+        uses: ./.github/actions/resolved
 
       - name: PHPStan
         run: vendor/bin/phpstan analyse --configuration phpstan.neon.dist --no-progress

@@ -23,6 +23,10 @@
     <!-- Neither is ours to lint: composer writes one, the code generator the other. -->
     <exclude-pattern>vendor/*</exclude-pattern>
     <exclude-pattern>var/*</exclude-pattern>
+    <!-- CI configuration rather than module code: `php -l` lints it, and
+         the Magento standard has nothing to say about a script that never
+         runs inside a store. -->
+    <exclude-pattern>.github/*</exclude-pattern>
 
     <arg name="extensions" value="php"/>
     <arg name="colors"/>
