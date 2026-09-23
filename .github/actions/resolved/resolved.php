@@ -65,7 +65,7 @@ function main(array $argv): int
     }
 
     // The semver library lives in the tree being read, not beside this script,
-    // so a tree without one leaves every version unjudged rather than failing.
+    // so a tree without one makes every row read `not judged` rather than blank.
     $autoload = $vendor . '/autoload.php';
     if (is_readable($autoload)) {
         require_once $autoload;
@@ -99,9 +99,9 @@ function manifestFromGit(string $manifest): ?string
  */
 function declaredConstraints(string $manifest): array
 {
-    // Read the committed manifest, not the working copy. The coding-standard
-    // job runs `composer init` in the checkout first, which replaces this file
-    // before anything reports on it.
+    // Read the committed manifest, not the working copy. A job that installs
+    // something runs `composer require`, which writes its own constraints into
+    // this file before anything reports on it.
     $raw = manifestFromGit($manifest);
     if ($raw === null) {
         if (!is_readable($manifest)) {
@@ -170,6 +170,18 @@ function outside(array $verdicts): array
     return array_keys(array_filter($verdicts, static fn(?bool $v): bool => $v === false));
 }
 
+/**
+ * The marker for one row: `outside` when the version violates the declared range,
+ * `not judged` when a range is declared and nothing could decide it, empty otherwise.
+ */
+function markFor(?bool $verdict, string $range): string
+{
+    if ($range === '' || $verdict === true) {
+        return '';
+    }
+    return $verdict === false ? 'outside' : 'not judged';
+}
+
 /** Printed only when something is outside: a line that always prints is not read. */
 function warning(array $out): string
 {
@@ -221,7 +233,8 @@ function renderMarkdown(array $versions, array $declared, array $verdicts): stri
     foreach ($versions as $label => $version) {
         $range = declaredFor($label, $declared);
         $shown = $range === '' ? '' : '`' . str_replace('|', '\\|', $range) . '`';
-        $mark = ($verdicts[$label] ?? null) === false ? '**outside**' : '';
+        $mark = markFor($verdicts[$label] ?? null, $range);
+        $mark = $mark === '' ? '' : "**{$mark}**";
         $out .= "| {$label} | `{$version}` | {$shown} | {$mark} |\n";
     }
     $out .= "\nNothing here pins a version: this module declares a range and the job "

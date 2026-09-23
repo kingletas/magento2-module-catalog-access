@@ -79,22 +79,33 @@ jobs:
 
       - name: Install the standard only
         # magento/magento-coding-standard is on Packagist, so this job needs no
-        # Magento credentials and always gates.
+        # Magento credentials and always gates. It resolves in a directory of its
+        # own: `composer init` replaces whatever manifest it finds, and the
+        # module's own sits in the checkout root.
+        #
+        # composer/semver is not a phpcs package. The resolved reporter reads its
+        # semver library out of the tree it is pointed at, and without one every
+        # version in the step summary reads `not judged`.
         run: |
-          composer init --quiet --name=kingletas/cs-runner --no-interaction
-          composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
-          composer require --dev --no-interaction --no-progress \
+          set -euo pipefail
+          mkdir -p local.d/cs-runner
+          composer --working-dir=local.d/cs-runner init --quiet --name=kingletas/cs-runner --no-interaction
+          composer --working-dir=local.d/cs-runner config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer --working-dir=local.d/cs-runner require --dev --no-interaction --no-progress \
             magento/magento-coding-standard:'>=38 <42' \
             phpcompatibility/php-compatibility:^9.3 \
-            slevomat/coding-standard:^8.15
+            slevomat/coding-standard:^8.15 \
+            composer/semver:^3.4
 
       # What this job resolved, for the step summary. Never a reason for a red run.
       - name: What this run resolved
         if: always()
         uses: ./.github/actions/resolved
+        with:
+          vendor: local.d/cs-runner/vendor
 
       - name: phpcs
-        run: vendor/bin/phpcs --standard=phpcs.xml.dist --report=full
+        run: local.d/cs-runner/vendor/bin/phpcs --standard=phpcs.xml.dist --report=full
 
   unit:
     name: Test suites
